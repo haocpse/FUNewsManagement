@@ -418,3 +418,4 @@ Migrations/*Snapshot.cs
 
 # Node modules (nếu dùng React/Blazor sau này)
 node_modules/
+FUNewsManagement/FUNewsManagement.sln

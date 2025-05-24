@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="InterfaceService\" />
-    <Folder Include="Service\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FUNews.DAL\FUNews.DAL.csproj" />
   </ItemGroup>
 

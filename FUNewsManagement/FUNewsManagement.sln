@@ -5,6 +5,10 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FUNewsManagement", "FUNewsManagement\FUNewsManagement.csproj", "{B04CF821-A412-4BF3-B78C-9AE86D172671}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FUNews.BLL", "FUNews.BLL\FUNews.BLL.csproj", "{FF6E95CD-AE19-4667-8884-3C3AB1F2F825}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FUNews.DAL", "FUNews.DAL\FUNews.DAL.csproj", "{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B04CF821-A412-4BF3-B78C-9AE86D172671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B04CF821-A412-4BF3-B78C-9AE86D172671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B04CF821-A412-4BF3-B78C-9AE86D172671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF6E95CD-AE19-4667-8884-3C3AB1F2F825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF6E95CD-AE19-4667-8884-3C3AB1F2F825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF6E95CD-AE19-4667-8884-3C3AB1F2F825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF6E95CD-AE19-4667-8884-3C3AB1F2F825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
