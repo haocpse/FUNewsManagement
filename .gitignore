@@ -403,3 +403,18 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
+
+# Ignore user config + secrets
+appsettings.json
+appsettings.Development.json
+secrets.json
+
+# Commit mẫu thay vì file thực tế
+!appsettings.template.json
+
+# EF Core migration cache (giữ Migration chính)
+Migrations/*.Designer.cs
+Migrations/*Snapshot.cs
+
+# Node modules (nếu dùng React/Blazor sau này)
+node_modules/
