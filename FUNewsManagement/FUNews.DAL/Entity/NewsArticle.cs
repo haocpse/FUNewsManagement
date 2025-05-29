@@ -12,7 +12,7 @@ namespace FUNews.DAL.Entity
     {
         [Key]
         [StringLength(20)]
-        public string NewsArticleID { get; set; } = string.Empty;
+        public string NewsArticleId { get; set; } = string.Empty;
 
         [StringLength(400)]
         public string? NewsTitle { get; set; }
@@ -29,25 +29,25 @@ namespace FUNews.DAL.Entity
         [StringLength(400)]
         public string? NewsSource { get; set; }
 
-        public short? CategoryID { get; set; }
+        public short? CategoryId { get; set; }
 
         public bool? NewsStatus { get; set; }
 
-        public short? CreatedByID { get; set; }
+        public short? CreatedById { get; set; }
 
-        public short? UpdatedByID { get; set; }
+        public short? UpdatedById { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
 
         // ==== Navigation properties ====
 
-        [ForeignKey(nameof(CategoryID))]
+        [ForeignKey(nameof(CategoryId))]
         public Category? Category { get; set; }
 
-        [ForeignKey(nameof(CreatedByID))]
+        [ForeignKey(nameof(CreatedById))]
         public SystemAccount? CreatedBy { get; set; }
 
-        [ForeignKey(nameof(UpdatedByID))]
+        [ForeignKey(nameof(UpdatedById))]
         public SystemAccount? UpdatedBy { get; set; }
         public ICollection<NewsTag>? NewsTags { get; set; }
     }

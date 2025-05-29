@@ -32,10 +32,10 @@ namespace FUNews.DAL
             {
                 entity.ToTable("Category");
 
-                entity.HasKey(e => e.CategoryID);
+                entity.HasKey(e => e.CategoryId);
 
-                entity.Property(e => e.CategoryID)
-                      .HasColumnName("CategoryID")
+                entity.Property(e => e.CategoryId)
+                      .HasColumnName("CategoryId")
                       .HasColumnType("smallint");
 
                 entity.Property(e => e.CategoryName)
@@ -46,7 +46,7 @@ namespace FUNews.DAL
                       .HasMaxLength(250)
                       .IsRequired();
 
-                entity.Property(e => e.ParentCategoryID)
+                entity.Property(e => e.ParentCategoryId)
                       .HasColumnType("smallint");
 
                 entity.Property(e => e.IsActive)
@@ -57,9 +57,9 @@ namespace FUNews.DAL
             {
                 entity.ToTable("SystemAccount");
 
-                entity.HasKey(e => e.AccountID);
+                entity.HasKey(e => e.AccountId);
 
-                entity.Property(e => e.AccountID)
+                entity.Property(e => e.AccountId)
                       .HasColumnType("smallint");
 
                 entity.Property(e => e.AccountName)
@@ -77,13 +77,13 @@ namespace FUNews.DAL
                 // Quan hệ 1-n với NewsArticle (CreatedBy)
                 entity.HasMany(e => e.CreatedNewsArticles)
                       .WithOne(a => a.CreatedBy)
-                      .HasForeignKey(a => a.CreatedByID)
+                      .HasForeignKey(a => a.CreatedById)
                       .OnDelete(DeleteBehavior.Restrict);
 
                 // Quan hệ 1-n với NewsArticle (UpdatedBy)
                 entity.HasMany(e => e.UpdatedNewsArticles)
                       .WithOne(a => a.UpdatedBy)
-                      .HasForeignKey(a => a.UpdatedByID)
+                      .HasForeignKey(a => a.UpdatedById)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -91,9 +91,9 @@ namespace FUNews.DAL
             {
                 entity.ToTable("NewsArticle");
 
-                entity.HasKey(e => e.NewsArticleID);
+                entity.HasKey(e => e.NewsArticleId);
 
-                entity.Property(e => e.NewsArticleID)
+                entity.Property(e => e.NewsArticleId)
                       .HasMaxLength(20)
                       .IsRequired();
 
@@ -112,17 +112,17 @@ namespace FUNews.DAL
 
                 entity.HasOne(e => e.Category)
                       .WithMany()
-                      .HasForeignKey(e => e.CategoryID)
+                      .HasForeignKey(e => e.CategoryId)
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(e => e.CreatedBy)
                       .WithMany()
-                      .HasForeignKey(e => e.CreatedByID)
+                      .HasForeignKey(e => e.CreatedById)
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(e => e.UpdatedBy)
                       .WithMany()
-                      .HasForeignKey(e => e.UpdatedByID)
+                      .HasForeignKey(e => e.UpdatedById)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -130,16 +130,16 @@ namespace FUNews.DAL
             {
                 entity.ToTable("NewsTag");
 
-                entity.HasKey(e => new { e.NewsArticleID, e.TagID }); // Composite key
+                entity.HasKey(e => new { e.NewsArticleId, e.TagId }); // Composite key
 
                 entity.HasOne(e => e.NewsArticle)
                       .WithMany(a => a.NewsTags)
-                      .HasForeignKey(e => e.NewsArticleID)
+                      .HasForeignKey(e => e.NewsArticleId)
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Tag)
                       .WithMany(t => t.NewsTags)
-                      .HasForeignKey(e => e.TagID)
+                      .HasForeignKey(e => e.TagId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }

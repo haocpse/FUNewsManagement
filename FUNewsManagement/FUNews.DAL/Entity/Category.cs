@@ -10,17 +10,17 @@ namespace FUNews.DAL.Entity
 {
     public class Category
     {
-        public short CategoryID { get; set; }
+        public short CategoryId { get; set; }
 
         public string CategoryName { get; set; } = string.Empty;
 
         public string CategoryDescription { get; set; } = string.Empty;
 
-        public short? ParentCategoryID { get; set; }
+        public short? ParentCategoryId { get; set; }
 
         public bool? IsActive { get; set; }
 
-        [ForeignKey(nameof(ParentCategoryID))]
+        [ForeignKey(nameof(ParentCategoryId))]
         public Category? ParentCategory { get; set; }
 
         public ICollection<Category>? SubCategories { get; set; }

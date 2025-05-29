@@ -10,7 +10,7 @@ namespace FUNews.DAL.Entity
     public class Tag
     {
         [Key]
-        public int TagID { get; set; }
+        public int TagId { get; set; }
 
         [StringLength(50)]
         public string? TagName { get; set; }
