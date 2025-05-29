@@ -9,13 +9,13 @@ namespace FUNews.DAL.Entity
 {
     public class NewsTag
     {
-        public string NewsArticleID { get; set; } = string.Empty;
-        public int TagID { get; set; }
+        public string NewsArticleId { get; set; } = string.Empty;
+        public int TagId { get; set; }
 
-        [ForeignKey(nameof(NewsArticleID))]
+        [ForeignKey(nameof(NewsArticleId))]
         public NewsArticle? NewsArticle { get; set; }
 
-        [ForeignKey(nameof(TagID))]
+        [ForeignKey(nameof(TagId))]
         public Tag? Tag { get; set; }
     }
 }

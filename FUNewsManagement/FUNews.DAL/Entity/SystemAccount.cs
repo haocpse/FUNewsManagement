@@ -11,7 +11,7 @@ namespace FUNews.DAL.Entity
     public class SystemAccount
     {
         [Key]
-        public short AccountID { get; set; } 
+        public short AccountId { get; set; } 
 
         [StringLength(100)]
         public string? AccountName { get; set; }
