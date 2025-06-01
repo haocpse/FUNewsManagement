@@ -1,4 +1,4 @@
-﻿using FUNews.DAL.InterfaceRepository;
+using FUNews.DAL.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

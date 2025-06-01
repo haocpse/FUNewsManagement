@@ -1,4 +1,4 @@
-﻿using FUNews.DAL.Entity;
+using FUNews.DAL.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

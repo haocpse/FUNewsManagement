@@ -3,6 +3,7 @@ using FUNews.BLL.Service;
 using FUNews.DAL;
 using FUNews.DAL.InterfaceRepository;
 using FUNews.DAL.Repository;
+using FUNews.Modals.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUNewsManagement
@@ -29,6 +30,9 @@ namespace FUNewsManagement
             
             // 3. Đăng ký Service
             builder.Services.AddScoped<ITagService, TagService>();
+            
+            // 4. Đăng ký AutoMapper
+            builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);
 
             var app = builder.Build();
 

@@ -1,8 +1,51 @@
+@model IEnumerable<FUNews.Modals.DTOs.Response.TagResponse>
+
 @{
-    ViewData["Title"] = "Tag";
+    ViewData["Title"] = "Tags";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">Tag</a>.</p>
-</div>
+<h2>Tag List</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Tag</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.First().TagId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().TagName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().Note)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model != null && Model.Any())
+    {
+        foreach (var tag in Model)
+        {
+            <tr>
+                <td>@tag.TagId</td>
+                <td>@tag.TagName</td>
+                <td>@tag.Note</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@tag.TagId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@tag.TagId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="4" class="text-center">No tags found.</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,4 +1,4 @@
-﻿using FUNews.BLL.InterfaceService;
+using FUNews.BLL.InterfaceService;
 using FUNews.DAL.InterfaceRepository;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FUNews.BLL.Service
 {
-    public class BaseService<TEntity, TKey> : IBaseService<TEntity, TKey> where TEntity : class
+    public class BaseService<TEntity, TKey> where TEntity : class
     {
 
         protected readonly IBaseRepository<TEntity, TKey> _repository;
