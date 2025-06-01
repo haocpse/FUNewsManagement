@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FUNews.BLL", "FUNews.BLL\FU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FUNews.DAL", "FUNews.DAL\FUNews.DAL.csproj", "{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuNews.Modals", "FuNews.Modals\FuNews.Modals.csproj", "{183B4DEE-5B03-48CA-AFDD-1C54D161BD09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F9B4CC7-1D44-4FDC-812C-8213ADCD2960}.Release|Any CPU.Build.0 = Release|Any CPU
+		{183B4DEE-5B03-48CA-AFDD-1C54D161BD09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{183B4DEE-5B03-48CA-AFDD-1C54D161BD09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{183B4DEE-5B03-48CA-AFDD-1C54D161BD09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{183B4DEE-5B03-48CA-AFDD-1C54D161BD09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

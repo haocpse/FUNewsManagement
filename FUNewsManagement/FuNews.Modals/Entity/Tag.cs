@@ -17,7 +17,6 @@ namespace FUNews.DAL.Entity
 
         [StringLength(400)]
         public string? Note { get; set; }
-
         // Quan hệ n-n với NewsArticle
         public ICollection<NewsTag>? NewsTags { get; set; }
     }
