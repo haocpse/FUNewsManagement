@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace FuNews.Modals.DTOs.Request.News
 {
-    public class NewsRequest
+    public class UpdateRequest
     {
+        public string? NewsArticleId { get; set; }
         public string? NewsTitle { get; set; }
         public string? Headline { get; set; }
         public string? NewsContent { get; set; }

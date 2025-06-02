@@ -1,4 +1,6 @@
-﻿using FUNews.DAL.Entity;
+﻿using FuNews.Modals.DTOs.Request.News;
+using FuNews.Modals.DTOs.Response.News;
+using FUNews.DAL.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +11,9 @@ namespace FUNews.BLL.InterfaceService
 {
     public interface INewsService : IBaseService<NewsArticle, String>
     {
+        Task<NewsResponse> CreateNews(NewsRequest request);
+        Task<NewsResponse> UpdateNews(UpdateRequest request);
+        Task DeleteNews(String id);
+        Task<List<NewsResponse>> GetOwnedNews(short id);
     }
 }

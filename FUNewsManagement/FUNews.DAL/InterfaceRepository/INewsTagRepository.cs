@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace FUNews.DAL.InterfaceRepository
 {
-    public interface INewsRepository : IBaseRepository<NewsArticle, String>
+    public interface INewsTagRepository
     {
-        Task<List<NewsArticle>> GetOwnedNews(short id);
+
+        Task AddAsync(NewsTag entity);
+        Task DeleteAsync(string id);
+
     }
 }
