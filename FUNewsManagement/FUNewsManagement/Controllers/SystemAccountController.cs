@@ -20,24 +20,37 @@ namespace FUNewsManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Update(short id)
+        public async Task<IActionResult> UserProfile(short id)
         {
             var account = await _systemAccountService.GetAccountById(id);
             if (account == null) return NotFound();
 
-            var request = new UpdateAccountRequest
+            var request = new AccountDetailResponse
             {
-                AccountId = id,
                 AccountName = account.AccountName,
                 AccountEmail = account.AccountEmail,
                 AccountPassword = account.AccountPassword,
                 AccountRole = account.AccountRole
             };
-
-            // Gán thông tin quyền vào ViewBag
-            ViewBag.IsAdmin = HttpContext.Session.GetString("AccountRole") == "1";
             return View(request);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> AccountList()
+        {
+            //bool isAdmin = HttpContext.Session.GetString("AccountRole") == "1";
+            //if (!isAdmin)
+            //{
+            //    return Forbid();
+            //}
+
+            var accountListResponse = await _systemAccountService.GetAllAccounts();
+            if (accountListResponse == null || !accountListResponse.Accounts.Any())
+                return NotFound("No accounts found.");
+
+            return View(accountListResponse);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Update(UpdateAccountRequest request)

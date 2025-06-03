@@ -14,5 +14,6 @@ namespace FUNews.BLL.InterfaceService
         Task<AccountDetailResponse> login(LoginRequest request);
         Task<AccountDetailResponse> UpdateAccount(UpdateAccountRequest request, bool isAdmin);
         Task<AccountDetailResponse> GetAccountById(short id);
+        Task<AccountListResponse> GetAllAccounts();
     }
 }

@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FUNewsManagement.Controllers
 {
-    public class LoginController : Controller
+    public class AuthenController : Controller
     {
         private readonly ILogger<SystemAccountController> _logger;
         private readonly ISystemAccountService _systemAccountService;
 
-        public LoginController(ILogger<SystemAccountController> logger, ISystemAccountService systemAccountService)
+        public AuthenController(ILogger<SystemAccountController> logger, ISystemAccountService systemAccountService)
         {
             _logger = logger;
             _systemAccountService = systemAccountService;
@@ -22,7 +22,7 @@ namespace FUNewsManagement.Controllers
         // POST: /SystemAccount/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Authen(LoginRequest request)
         {
             if (!ModelState.IsValid)
                 return View(request);
@@ -37,6 +37,13 @@ namespace FUNewsManagement.Controllers
             TempData["LoginSuccess"] = $"Xin chào {result.AccountName}";
             HttpContext.Session.SetString("AccountEmail", result.AccountEmail);
             return RedirectToAction("Profile", new { email = result.AccountEmail });
+        }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Login");
         }
     }
 }

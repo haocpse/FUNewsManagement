@@ -22,6 +22,7 @@ namespace FUNews.BLL.Service
             var account = await _systemAccountRepository.Login(request.AccountEmail, request.AccountPassword);
             return new AccountDetailResponse
             {
+                AccountId = account.AccountId,
                 AccountEmail = account.AccountEmail,
                 AccountName = account.AccountName,
                 AccountRole = account.AccountRole,
@@ -82,17 +83,23 @@ namespace FUNews.BLL.Service
             return null;
         }
 
-        public async Task<IEnumerable<AccountResponse>> GetAllAccounts()
+        public async Task<AccountListResponse> GetAllAccounts()
         {
             var accounts = await _systemAccountRepository.GetAllAsync();
-            return accounts.Select(account => new AccountResponse
+
+            var response = new AccountListResponse
             {
-                AccountId = account.AccountId,
-                AccountEmail = account.AccountEmail,
-                AccountName = account.AccountName,
-                AccountRole = account.AccountRole,
-                AccountPassword = account.AccountPassword
-            });
+                Accounts = accounts.Select(account => new AccountDetailResponse
+                {
+                    AccountId = account.AccountId,
+                    AccountEmail = account.AccountEmail,
+                    AccountName = account.AccountName,
+                    AccountRole = account.AccountRole
+                }).ToList()
+            };
+
+            return response;
         }
+
     }
 }
