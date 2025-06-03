@@ -27,12 +27,27 @@ namespace FUNewsManagement
             //    → Bắt buộc phải có hai tham số: interface và class cụ thể
             builder.Services.AddScoped<ITagRepository, TagRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            
+            builder.Services.AddScoped<ISystemAccountRepository, SystemAccountRepository>();
+
+
             // 3. Đăng ký Service
             builder.Services.AddScoped<ITagService, TagService>();
-            
+            builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
+
+
             // 4. Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);
+
+ 
+
+            // Add session services
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian tồn tại session
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -48,7 +63,7 @@ namespace FUNewsManagement
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthorization();
 
             app.MapControllerRoute(
