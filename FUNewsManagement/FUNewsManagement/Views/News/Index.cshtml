@@ -1,0 +1,66 @@
+﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
+
+@{
+    ViewData["Title"] = "Danh sách bài viết";
+}
+
+<h2 class="mb-3">Danh sách bài viết của bạn</h2>
+
+<button class="btn btn-primary mb-3" onclick="openPopup('/News/Create')">+ Tạo mới</button>
+
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Tiêu đề phụ</th>
+            <th>Danh mục</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NewsTitle</td>
+                <td>@item.Headline</td>
+                <td>@item.Category?.CategoryName</td>
+                <td>@(item.NewsStatus == true ? "Đã duyệt" : "Chờ duyệt")</td>
+                <td>@item.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="openPopup('/News/Edit/@item.NewsArticleId')">Sửa</button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal hiển thị popup form -->
+<div class="modal fade" id="newsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openPopup(url) {
+            $.get(url, function (data) {
+                $("#modalContent").html(data);
+                $("#newsModal").modal("show");
+            });
+        }
+
+        function confirmDelete(id) {
+            if (confirm("Bạn có chắc chắn muốn xoá bài viết này không?")) {
+                $.post("/News/Delete", { id: id }, function (result) {
+                    if (result.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+    </script>
+}

@@ -5,6 +5,7 @@ using FuNews.Modals.DTOs.Response.News;
 using FUNews.BLL.InterfaceService;
 using FUNews.DAL.Entity;
 using FUNews.DAL.InterfaceRepository;
+using FUNews.Modals.DTOs.Response;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -18,26 +19,29 @@ namespace FUNews.BLL.Service
     {
         private readonly INewsRepository _newsRepository;
         private readonly IMapper _mapper;
-        private readonly INewsService _newsService;
         private readonly INewsTagService _newsTagService;
         private readonly INewsTagRepository _newsTagRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public NewsService(INewsRepository newsRepository, IMapper mapper, INewsService newsService, INewsTagService newsTagService, INewsTagRepository newsTagRepository) : base(newsRepository)
+        public NewsService(INewsRepository newsRepository, IMapper mapper, INewsTagService newsTagService, INewsTagRepository newsTagRepository, ICategoryRepository categoryRepository, ITagRepository tagRepository) : base(newsRepository)
         {
             _newsRepository = newsRepository;
             _mapper = mapper;
-            _newsService = newsService;
             _newsTagService = newsTagService;
             _newsTagRepository = newsTagRepository;
+            _categoryRepository = categoryRepository;
+            _tagRepository = tagRepository;
         }
 
         public async Task<NewsResponse> CreateNews(NewsRequest request)
         {
             NewsArticle news = new()
             {
-                NewsArticleId = Guid.NewGuid().ToString(),
+                NewsArticleId = Guid.NewGuid().ToString("N").Substring(0, 20),
                 NewsContent = request.NewsContent,
-                NewsTitle = request.NewsTitle,  
+                Headline = request.Headline,
+                NewsTitle = request.NewsTitle,
                 NewsSource = request.NewsSource,
                 NewsStatus = false,
                 CategoryId = request.CategoryId,
@@ -46,7 +50,8 @@ namespace FUNews.BLL.Service
                 ModifiedDate = DateTime.Now,
             };
             await _newsRepository.AddAsync(news);
-            if (!request.TagIds.IsNullOrEmpty()) { 
+            if (!request.TagIds.IsNullOrEmpty())
+            {
                 await _newsTagService.AddNewsTag(news.NewsArticleId, request.TagIds);
             }
             return _mapper.Map<NewsResponse>(news);
@@ -55,17 +60,17 @@ namespace FUNews.BLL.Service
         public async Task<NewsResponse> UpdateNews(UpdateRequest request)
         {
             NewsArticle? news = await _newsRepository.GetByIdAsync(request.NewsArticleId);
-            if (news != null) 
-            { 
-                if (!request.TagIds.IsNullOrEmpty())
+            if (news != null)
+            {
+                if (!request.Tags.IsNullOrEmpty())
                 {
-                    await _newsTagService.UpdateNewsTag(news.NewsArticleId, request.TagIds);
+                    await _newsTagService.UpdateNewsTag(news.NewsArticleId, request.Tags);
                 }
                 //news.UpdatedById = 
                 news.ModifiedDate = DateTime.Now;
                 await _newsRepository.UpdateAsync(news);
             }
-            return _mapper.Map<NewsResponse>(news);
+            return await BuildNewsResponse(news);
         }
 
         public async Task DeleteNews(String id)
@@ -80,5 +85,61 @@ namespace FUNews.BLL.Service
             return _mapper.Map<List<NewsResponse>>(newsList);
         }
 
+        public async Task<NewsResponse> GetById(String id)
+        {
+            var news = await _newsRepository.GetByIdAsync(id);
+            return await BuildNewsResponse(news);
+        }
+
+        public async Task<List<NewsResponse>> OverriedGetAllAsync()
+        {
+            var news = await _newsRepository.GetAllAsync();
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                NewsResponse response = await BuildNewsResponse(item);
+                responses.Add( response );
+            }
+            return responses;
+
+        }
+
+        private async Task<NewsResponse> BuildNewsResponse(NewsArticle item)
+        {
+            Category? category = await _categoryRepository.GetByIdAsync(item.CategoryId.Value);
+            List<NewsTag> tags = await _newsTagRepository.GetAllByNewsIdAsync(item.NewsArticleId);
+            List<TagResponse> tagsRespone = new List<TagResponse>();
+            foreach (NewsTag tag in tags)
+            {
+                Tag? currentTag = await _tagRepository.GetByIdAsync(tag.TagId);
+                tagsRespone.Add(
+                    new()
+                    {
+                        TagId = tag.TagId,
+                        TagName = currentTag.TagName,
+                        Note = currentTag.Note,
+                    }
+                    );
+            }
+            return new()
+            {
+                NewsArticleId = item.NewsArticleId,
+                NewsTitle = item.NewsTitle,
+                Headline = item.Headline,
+                NewsContent = item.NewsContent,
+                NewsSource = item.NewsSource,
+                Category = new()
+                {
+                    CategoryId = category.CategoryId,
+                    CategoryDescription = category.CategoryDescription,
+                    CategoryName = category.CategoryName,
+                    IsActive = category.IsActive,
+                    ParentCategoryId = category.ParentCategoryId,
+                },
+                NewsStatus = item.NewsStatus,
+                Tags = tagsRespone,
+                CreatedDate = item.CreatedDate
+            };
+        }
     }
 }

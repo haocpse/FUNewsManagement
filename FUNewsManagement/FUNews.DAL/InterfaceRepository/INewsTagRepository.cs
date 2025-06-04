@@ -12,6 +12,7 @@ namespace FUNews.DAL.InterfaceRepository
 
         Task AddAsync(NewsTag entity);
         Task DeleteAsync(string id);
+        Task<List<NewsTag>> GetAllByNewsIdAsync(String News);
 
     }
 }

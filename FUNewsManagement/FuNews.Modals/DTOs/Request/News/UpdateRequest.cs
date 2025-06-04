@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FuNews.Modals.DTOs.Request._Tag;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,6 @@ namespace FuNews.Modals.DTOs.Request.News
         public string? NewsContent { get; set; }
         public string? NewsSource { get; set; }
         public short? CategoryId { get; set; }
-        public List<int>? TagIds { get; set; }
+        public List<NewsTagRequest>? Tags { get; set; }
     }
 }

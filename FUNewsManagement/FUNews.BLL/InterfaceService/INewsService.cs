@@ -15,5 +15,9 @@ namespace FUNews.BLL.InterfaceService
         Task<NewsResponse> UpdateNews(UpdateRequest request);
         Task DeleteNews(String id);
         Task<List<NewsResponse>> GetOwnedNews(short id);
+
+        Task<NewsResponse> GetById(String id);
+
+        Task<List<NewsResponse>> OverriedGetAllAsync();
     }
 }

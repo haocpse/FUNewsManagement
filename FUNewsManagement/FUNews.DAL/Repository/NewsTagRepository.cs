@@ -28,13 +28,16 @@ namespace FUNews.DAL.Repository
 
         public async Task DeleteAsync(string id)
         {
-            var tagsToRemove = await _context.NewsTags
+            var tagsToRemove = await GetAllByNewsIdAsync(id);
+            _context.NewsTags.RemoveRange(tagsToRemove);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<NewsTag>> GetAllByNewsIdAsync(String id)
+        {
+            return await _context.NewsTags
                 .Where(nt => nt.NewsArticleId == id)
                 .ToListAsync();
-
-            _context.NewsTags.RemoveRange(tagsToRemove);
-
-            await _context.SaveChangesAsync();
         }
     }
 }

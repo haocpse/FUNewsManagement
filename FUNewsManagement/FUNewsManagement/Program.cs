@@ -1,6 +1,8 @@
+using FuNews.Modals.Mapping;
 using FUNews.BLL.InterfaceService;
 using FUNews.BLL.Service;
 using FUNews.DAL;
+using FUNews.DAL.Entity;
 using FUNews.DAL.InterfaceRepository;
 using FUNews.DAL.Repository;
 using FUNews.Modals.Mapping;
@@ -27,12 +29,18 @@ namespace FUNewsManagement
             //    → Bắt buộc phải có hai tham số: interface và class cụ thể
             builder.Services.AddScoped<ITagRepository, TagRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            
+            builder.Services.AddScoped<INewsRepository, NewsRepository>();
+            builder.Services.AddScoped<INewsTagRepository, NewsTagRepository>();
+
             // 3. Đăng ký Service
             builder.Services.AddScoped<ITagService, TagService>();
-            
+            builder.Services.AddScoped<INewsService, NewsService>();
+            builder.Services.AddScoped<INewsTagService, NewsTagService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
             // 4. Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(NewsMappingProfile).Assembly);
 
             var app = builder.Build();
 
