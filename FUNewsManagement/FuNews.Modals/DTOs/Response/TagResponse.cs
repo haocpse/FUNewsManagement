@@ -1,4 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+
+
+using FuNews.Modals.DTOs.Response.News;
 
 namespace FUNews.Modals.DTOs.Response
 {
@@ -9,5 +11,8 @@ namespace FUNews.Modals.DTOs.Response
         public string? TagName { get; set; }
 
         public string? Note { get; set; }
+        
+        public ICollection<NewsSummaryResponse> News { get; set; }
+        
     }
 }
