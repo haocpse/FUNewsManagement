@@ -23,9 +23,13 @@
             <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="text-primary" title="Edit">
                 <i class="fas fa-edit"></i>
             </a>
-            <a asp-action="Details" asp-route-id="@Model.CategoryId" class="text-info" title="Details">
-                <i class="fas fa-info-circle"></i>
-            </a>
+            <button type="button" 
+                    class="btn btn-sm btn-link text-success p-0 open-create-modal" 
+                    data-parentid="@Model.CategoryId" 
+                    data-parentname="@Model.CategoryName" 
+                    title="Add Subcategory">
+                <i class="fas fa-plus"></i>
+            </button>
             <a asp-action="Delete" asp-route-id="@Model.CategoryId" class="text-danger" title="Delete">
                 <i class="fas fa-trash"></i>
             </a>
