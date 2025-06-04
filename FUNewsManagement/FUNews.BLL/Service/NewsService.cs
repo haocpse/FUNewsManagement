@@ -138,7 +138,7 @@ namespace FUNews.BLL.Service
                     CategoryId = category.CategoryId,
                     CategoryDescription = category.CategoryDescription,
                     CategoryName = category.CategoryName,
-                    IsActive = category.IsActive,
+                    IsActive = category.IsActive.Value,
                     ParentCategoryId = category.ParentCategoryId,
                 },
                 NewsStatus = item.NewsStatus,
