@@ -29,7 +29,7 @@
                 <td>@(item.NewsStatus == true ? "Đã duyệt" : "Chờ duyệt")</td>
                 <td>@item.CreatedDate?.ToString("dd/MM/yyyy")</td>
                 <td>
-                    <button class="btn btn-sm btn-warning" onclick="openPopup('/News/Edit/@item.NewsArticleId')">Sửa</button>
+                    <button class="btn btn-sm btn-warning" onclick="openPopup('/News/Update/@item.NewsArticleId')">Sửa</button>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Xóa</button>
                 </td>
             </tr>
@@ -62,5 +62,25 @@
                 });
             }
         }
+
+        // Bắt sự kiện submit từ bất kỳ form nào tên #newsForm (bao gồm Create/Edit)
+        $(document).on('submit', '#newsForm', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: $(this).attr("action"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $("#newsModal").modal("hide");
+                        location.reload(); // reload danh sách bài viết
+                    } else {
+                        // render lại partial nếu có lỗi validation
+                        $("#modalContent").html(response);
+                    }
+                }
+            });
+        });
     </script>
 }

@@ -37,7 +37,7 @@ namespace FUNewsManagement.Controllers
                     Value = c.CategoryId.ToString(),
                     Text = c.CategoryName
                 }).ToList();
-            var tags = await _tagService.GetAllAsync(); 
+            var tags = await _tagService.GetAllAsync();
             ViewBag.Tags = tags
                 .Select(t => new SelectListItem
                 {
@@ -58,7 +58,7 @@ namespace FUNewsManagement.Controllers
             return PartialView("_FormCreatePartial", request);
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Update(string id)
         {
             var news = await _newsService.GetById(id);
             var newsTag = news.Tags;
@@ -81,11 +81,23 @@ namespace FUNewsManagement.Controllers
                 Headline = news.Headline,
                 Tags = requests
             };
+            ViewBag.Categories = (await _categoryService.GetAllAsync())
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CategoryId.ToString(),
+                    Text = c.CategoryName
+                }).ToList();
+            ViewBag.Tags = (await _tagService.GetAllAsync())
+                .Select(t => new SelectListItem
+                {
+                    Value = t.TagId.ToString(),
+                    Text = t.TagName
+                }).ToList();
             return PartialView("_FormUpdatePartial", updateRequest);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(UpdateRequest request)
+        public async Task<IActionResult> Update(UpdateRequest request)
         {
             if (ModelState.IsValid)
             {
