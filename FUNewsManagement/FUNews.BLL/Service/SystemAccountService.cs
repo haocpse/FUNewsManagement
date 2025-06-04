@@ -23,6 +23,10 @@ namespace FUNews.BLL.Service
         public async Task<AccountDetailResponse> login(LoginRequest request)
         {
             var account = await _systemAccountRepository.Login(request.AccountEmail, request.AccountPassword);
+            if (account == null)
+            {
+                throw new InvalidOperationException("Invalid login credentials.");
+            }
             return new AccountDetailResponse
             {
                 AccountId = account.AccountId,

@@ -37,15 +37,38 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
                     </li>
-                  	<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Authen" asp-action="Index">Login</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="SystemAccount" asp-action="UserProfile">UserProfile</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="SystemAccount" asp-action="Update">Update</a>
-						</li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @if (Context.Session.GetInt32("AccountRole") == 1) // Staff
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SystemAccount" asp-action="UpdateStaffProfile">Update Profile</a>
+                            </li>
+                        }
+                        @if (Context.Session.GetInt32("AccountRole") == 3) // Admin
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SystemAccount" asp-action="AccountList">Manage Accounts</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <div class="nav-link text-dark">
+                                Welcome, @Context.Session.GetString("AccountName")!
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Authen" asp-action="Logout" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="nav-link text-dark btn btn-link">Logout</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Authen" asp-action="Index">Login</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
