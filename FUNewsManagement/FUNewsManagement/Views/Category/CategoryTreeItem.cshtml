@@ -1,0 +1,44 @@
+@model FuNews.Modals.DTOs.Response.Category.CategoryTreeViewModel
+
+<li>
+    <div class="category-node">
+        @if (Model.Children.Any())
+        {
+            <div class="category-toggle">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        }
+        else
+        {
+            <div style="width: 16px; display: inline-block;"></div>
+        }
+
+        <i class="fas fa-folder-open category-icon"></i>
+        
+        <span class="@(Model.IsActive ? "" : "inactive")">
+            @Model.CategoryName
+        </span>
+        
+        <div class="category-actions">
+            <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="text-primary" title="Edit">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a asp-action="Details" asp-route-id="@Model.CategoryId" class="text-info" title="Details">
+                <i class="fas fa-info-circle"></i>
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.CategoryId" class="text-danger" title="Delete">
+                <i class="fas fa-trash"></i>
+            </a>
+        </div>
+    </div>
+    
+    @if (Model.Children.Any())
+    {
+        <ul>
+            @foreach (var childCategory in Model.Children)
+            {
+                @await Html.PartialAsync("CategoryTreeItem", childCategory)
+            }
+        </ul>
+    }
+</li>

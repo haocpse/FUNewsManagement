@@ -6,12 +6,12 @@ using FUNewsManagement.Models.Request;
 
 namespace FUNews.Modals.Mapping
 {
-    public class TagMappingProfile : Profile
+    public class CategoryMappingProfile : Profile
     {
-        public TagMappingProfile()
+        public CategoryMappingProfile()
         {
-            CreateMap<Tag, TagResponse>();
-            CreateMap<TagRequest, Tag>();
+            CreateMap<Category,CategoryResponse>();
+            CreateMap<CategoryRequest,Category>();
         }
     }
 }

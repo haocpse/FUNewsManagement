@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace FUNews.Modals.DTOs.Response
+namespace FuNews.Modals.DTOs.Response.Category
 {
     public class CategoryResponse
     {

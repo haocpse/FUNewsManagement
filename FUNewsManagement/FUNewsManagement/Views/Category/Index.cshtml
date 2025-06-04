@@ -1,0 +1,111 @@
+@model List<FuNews.Modals.DTOs.Response.Category.CategoryTreeViewModel>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Category Management</h2>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New Category
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Category Folder</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="category-tree">
+                            <ul class="tree">
+                                @foreach (var category in Model)
+                                {
+                                    @await Html.PartialAsync("CategoryTreeItem", category)
+                                }
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            No categories found. Please create a new category.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .tree {
+            list-style: none;
+            padding-left: 0;
+        }
+        .tree li {
+            padding: 6px 0;
+        }
+        .tree ul {
+            list-style: none;
+            padding-left: 20px;
+            border-left: 1px dashed #ccc;
+            margin-left: 10px;
+        }
+        .category-tree .inactive {
+            color: #999;
+            font-style: italic;
+        }
+        .category-node {
+            display: flex;
+            align-items: center;
+        }
+        .category-toggle {
+            cursor: pointer;
+            margin-right: 5px;
+            width: 16px;
+            text-align: center;
+        }
+        .category-actions {
+            margin-left: 10px;
+        }
+        .category-actions a {
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        .category-icon {
+            margin-right: 8px;
+            color: #6c757d;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle toggle click
+            $('.category-toggle').on('click', function() {
+                $(this).find('i').toggleClass('fa-chevron-down fa-chevron-right');
+                $(this).closest('li').children('ul').slideToggle(200);
+            });
+            
+            // Expand all
+            $('#expand-all').click(function(e) {
+                e.preventDefault();
+                $('.category-tree ul').slideDown(200);
+                $('.category-toggle i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+            });
+            
+            // Collapse all
+            $('#collapse-all').click(function(e) {
+                e.preventDefault();
+                $('.category-tree ul').slideUp(200);
+                $('.category-toggle i').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+            });
+        });
+    </script>
+}

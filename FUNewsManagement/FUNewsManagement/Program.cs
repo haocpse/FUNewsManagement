@@ -39,10 +39,11 @@ namespace FUNewsManagement
 
             // 3. Đăng ký Service
             builder.Services.AddScoped<ITagService, TagService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
-
             // 4. Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(CategoryMappingProfile).Assembly);
 
             // Add session services
             builder.Services.AddDistributedMemoryCache();
