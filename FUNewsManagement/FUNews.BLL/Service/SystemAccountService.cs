@@ -10,6 +10,7 @@ using FuNews.Modals.DTOs.Response;
 using FUNews.BLL.InterfaceService;
 using FUNews.DAL.Entity;
 using FUNews.DAL.InterfaceRepository;
+using Microsoft.Extensions.Configuration;
 
 namespace FUNews.BLL.Service
 {
@@ -17,6 +18,8 @@ namespace FUNews.BLL.Service
         : BaseService<SystemAccount, short>(SystemAccountRepository), ISystemAccountService
     {
         private readonly ISystemAccountRepository _systemAccountRepository = SystemAccountRepository;
+        private readonly IConfiguration _configuration;
+
         public async Task<AccountDetailResponse> login(LoginRequest request)
         {
             var account = await _systemAccountRepository.Login(request.AccountEmail, request.AccountPassword);
@@ -43,21 +46,34 @@ namespace FUNews.BLL.Service
 
                 if (request.AccountEmail != null && request.AccountEmail != account.AccountEmail)
                 {
-                    // Check if the new email already exists
                     var existingAccount = await _systemAccountRepository.GetByEmailAsync(request.AccountEmail);
                     if (existingAccount != null)
                     {
                         throw new Exception("Email already exists.");
                     }
+                    account.AccountEmail = request.AccountEmail;
                 }
 
+                // Only allow role updates if the user is an admin
                 if (isAdmin && request.AccountRole.HasValue)
-                    account.AccountRole = request.AccountRole;
+                {
+                    // Validate that the role is either Staff, Lecturer, or Admin
+                    if (request.AccountRole == SystemAccount.Roles.Staff ||
+                        request.AccountRole == SystemAccount.Roles.Lecturer ||
+                        request.AccountRole == int.Parse(_configuration["Roles:AdminRole"])) // Use int.Parse instead of GetValue
+                    {
+                        account.AccountRole = request.AccountRole;
+                    }
+                    else
+                    {
+                        throw new Exception("Invalid role specified.");
+                    }
+                }
 
                 await _systemAccountRepository.UpdateAsync(account);
-
                 return new AccountDetailResponse
                 {
+                    AccountId = account.AccountId,
                     AccountEmail = account.AccountEmail,
                     AccountName = account.AccountName,
                     AccountRole = account.AccountRole,

@@ -35,10 +35,14 @@
     @if (isAdmin)
     {
         <div class="form-group">
-            <label asp-for="AccountRole">Access</label>
+            <label asp-for="AccountRole">Role</label>
             <select asp-for="AccountRole" class="form-control">
-                <option value="0" selected="@((Model.AccountRole == 0))">User</option>
-                <option value="1" selected="@((Model.AccountRole == 1))">Admin</option>
+                <option value="1" selected="@(Model.AccountRole == 1)">Staff</option>
+                <option value="2" selected="@(Model.AccountRole == 2)">Lecturer</option>
+                @if (ViewBag.AdminRole != null)
+                {
+                    <option value="@ViewBag.AdminRole" selected="@(Model.AccountRole == ViewBag.AdminRole)">Admin</option>
+                }
             </select>
             <span asp-validation-for="AccountRole" class="text-danger"></span>
         </div>
