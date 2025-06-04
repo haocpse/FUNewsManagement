@@ -1,0 +1,32 @@
+@model FUNews.Modals.DTOs.Response.TagResponse
+
+@* Form này sẽ được load vào modal-body qua AJAX *@
+@using (Html.BeginForm("Edit", "Tag", FormMethod.Post, new {
+            id = "frmEditTag",
+            @data_ajax = "true",
+            @data_ajax_method = "POST",
+            @data_ajax_mode = "replace",
+            @data_ajax_success = "onEditSuccess",
+            @data_ajax_failure = "onEditFailure"
+        }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.TagId)
+
+    <div class="mb-3">
+        <label asp-for="TagName" class="form-label">Tag Name</label>
+        <input asp-for="TagName" class="form-control" />
+        <span asp-validation-for="TagName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Note" class="form-label">Note (optional)</label>
+        <textarea asp-for="Note" class="form-control"></textarea>
+        <span asp-validation-for="Note" class="text-danger"></span>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    </div>
+}
