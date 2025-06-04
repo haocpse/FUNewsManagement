@@ -1,111 +1,450 @@
 @model List<FuNews.Modals.DTOs.Response.Category.CategoryTreeViewModel>
 @{
-    ViewData["Title"] = "Categories";
+ViewData["Title"] = "Category Management";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Category Management</h2>
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Create New Category
-                </a>
+<div class="container-fluid py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary bg-gradient text-white d-flex justify-content-between align-items-center">
+            <h4 class="m-0"><i class="bi bi-folder-fill me-2"></i>Category Management</h4>
+            <button id="btnCreateRoot" class="btn btn-light">
+                <i class="bi bi-plus-circle me-1"></i> Create Root Category
+            </button>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+            <div class="category-tree">
+                <ul class="tree">
+                    @foreach (var category in Model)
+                    {
+                    @await Html.PartialAsync("CategoryTreeItem", category)
+                    }
+                </ul>
             </div>
-            
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Category Folder</h5>
-                </div>
-                <div class="card-body">
-                    @if (Model.Any())
-                    {
-                        <div class="category-tree">
-                            <ul class="tree">
-                                @foreach (var category in Model)
-                                {
-                                    @await Html.PartialAsync("CategoryTreeItem", category)
-                                }
-                            </ul>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info">
-                            No categories found. Please create a new category.
-                        </div>
-                    }
+            }
+            else
+            {
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-folder-x fs-1"></i>
+                <p class="mt-2">No categories available. Create a new category to get started.</p>
+            </div>
+            }
+        </div>
+        <div class="card-footer text-muted">
+            <small>Total Root Categories: @(Model?.Count() ?? 0)</small>
+        </div>
+    </div>
+</div>
+
+<!-- Modal rỗng ban đầu, body sẽ được load từ controller -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="categoryModalLabel">
+                    <i class="bi bi-folder-plus me-2"></i>Create Category
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Phần này sẽ được thay thế bằng partial view -->
+                <div class="d-flex justify-content-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@section Styles {
-    <style>
-        .tree {
-            list-style: none;
-            padding-left: 0;
-        }
-        .tree li {
-            padding: 6px 0;
-        }
-        .tree ul {
-            list-style: none;
-            padding-left: 20px;
-            border-left: 1px dashed #ccc;
-            margin-left: 10px;
-        }
-        .category-tree .inactive {
-            color: #999;
-            font-style: italic;
-        }
-        .category-node {
-            display: flex;
-            align-items: center;
-        }
-        .category-toggle {
-            cursor: pointer;
-            margin-right: 5px;
-            width: 16px;
-            text-align: center;
-        }
-        .category-actions {
-            margin-left: 10px;
-        }
-        .category-actions a {
-            margin-left: 5px;
-            font-size: 14px;
-        }
-        .category-icon {
-            margin-right: 8px;
-            color: #6c757d;
-        }
-    </style>
-}
+<!-- Toast notifications container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+         aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle me-2"></i>
+                <span id="successToastMessage">Operation completed successfully</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
+         aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <span id="errorToastMessage">An error occurred</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa Category -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-folder-x text-danger fs-1"></i>
+                </div>
+                <p class="text-center">Are you sure you want to delete this category:</p>
+                <h5 class="text-center mb-3">
+                    <span id="deleteCategoryName" class="badge bg-secondary"></span>
+                </h5>
+                <p class="text-center text-danger small">
+                    <i class="bi bi-info-circle me-1"></i>This action cannot be undone.
+                </p>
+                <p class="text-center text-warning small">
+                    <i class="bi bi-exclamation-triangle me-1"></i>All subcategories will also be deleted.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-center border-0">
+                <form id="deleteCategoryForm" method="POST">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteCategoryId" name="id"/>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger ms-2">
+                        <i class="bi bi-trash me-1"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-    <script>
-        $(document).ready(function() {
-            // Handle toggle click
-            $('.category-toggle').on('click', function() {
-                $(this).find('i').toggleClass('fa-chevron-down fa-chevron-right');
-                $(this).closest('li').children('ul').slideToggle(200);
-            });
-            
-            // Expand all
-            $('#expand-all').click(function(e) {
-                e.preventDefault();
-                $('.category-tree ul').slideDown(200);
-                $('.category-toggle i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
-            });
-            
-            // Collapse all
-            $('#collapse-all').click(function(e) {
-                e.preventDefault();
-                $('.category-tree ul').slideUp(200);
-                $('.category-toggle i').removeClass('fa-chevron-down').addClass('fa-chevron-right');
-            });
+<partial name="_ValidationScriptsPartial"/>
+<script>
+    // Khởi tạo toasts
+    var successToast = new bootstrap.Toast(document.getElementById('successToast'), {
+        delay: 3000
+    });
+    var errorToast = new bootstrap.Toast(document.getElementById('errorToast'), {
+        delay: 5000
+    });
+
+    // Helper function để hiển thị thông báo
+    function showToast(type, message) {
+        if (type === 'success') {
+            document.getElementById('successToastMessage').textContent = message;
+            successToast.show();
+        } else {
+            document.getElementById('errorToastMessage').textContent = message;
+            errorToast.show();
+        }
+    }
+
+    // Xử lý toggle cây danh mục
+    $(document).on('click', '.category-toggle', function() {
+        $(this).find('i').toggleClass('fa-chevron-down fa-chevron-right');
+        $(this).closest('li').children('ul').slideToggle(200);
+    });
+
+    // Xử lý sự kiện click vào nút "+" (Add Subcategory)
+    $(document).on('click', '.open-create-modal', function() {
+        // Lấy giá trị từ data attributes
+        var parentId = $(this).data('parentid');
+        var parentName = $(this).data('parentname');
+
+        console.log("Opening modal for parent:", parentName, "with ID:", parentId);
+
+        // SỬA: Sử dụng ID categoryModal thay vì createCategoryModal
+        var modal = $('#categoryModal');
+
+        // Cập nhật tiêu đề modal
+        modal.find('.modal-title').html('<i class="bi bi-folder-plus me-2"></i>Create Subcategory under "' + parentName + '"');
+
+        // Hiển thị loading trong modal
+        modal.find('.modal-body').html(`
+        <div class="d-flex justify-content-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `);
+
+        // SỬA: Sử dụng Bootstrap 5 syntax để mở modal
+        var bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+
+        // Tải form qua AJAX
+        $.ajax({
+            url: '/Category/OpenCreateModal',
+            type: 'GET',
+            data: { parentId: parentId },
+            success: function(data) {
+                // Đặt nội dung form vào modal
+                modal.find('.modal-body').html(data);
+
+                // Đảm bảo ParentCategoryId được đặt chính xác
+                $('#ParentCategoryId').val(parentId);
+
+                // Khởi tạo lại validation cho form
+                $.validator.unobtrusive.parse('#frmCreateCategory');
+            },
+            error: function(xhr, status, error) {
+                // Hiển thị lỗi nếu có
+                modal.find('.modal-body').html(`
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    Failed to load form: ${error}
+                </div>
+            `);
+            }
         });
-    </script>
+    });
+
+    // Khi nhấn nút "Create Root Category"
+    document.getElementById('btnCreateRoot').addEventListener('click', function () {
+        loadCreateCategoryModal();
+    });
+
+    // Xử lý khi nhấp vào nút "+" (Add Subcategory)
+    $(document).on('click', '.btn-add-subcategory', function () {
+        var parentId = $(this).data('parentid');
+        var parentName = $(this).data('parentname');
+        loadCreateCategoryModal(parentId, parentName);
+    });
+
+    $(document).on('click', '.open-edit-modal', function() {
+        var categoryId = $(this).data('id');
+        var categoryName = $(this).data('name');
+
+        console.log("Opening edit modal for:", categoryName, "with ID:", categoryId);
+
+        // Hiển thị loading trong modal
+        $('#categoryModal .modal-body').html(`
+        <div class="d-flex justify-content-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `);
+
+        // Cập nhật tiêu đề modal
+        $('#categoryModalLabel').html('<i class="fas fa-edit me-2"></i>Edit Category: ' + categoryName);
+
+        // Hiển thị modal
+        var bsModal = new bootstrap.Modal($('#categoryModal'));
+        bsModal.show();
+
+        // Load nội dung edit form
+        $.ajax({
+            url: '/Category/GetEditModal',
+            type: 'GET',
+            data: { id: categoryId },
+            success: function(data) {
+                $('#categoryModal .modal-body').html(data);
+                $.validator.unobtrusive.parse('#frmEditCategory');
+            },
+            error: function(xhr, status, error) {
+                $('#categoryModal .modal-body').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Failed to load form: ${error}
+                </div>
+            `);
+            }
+        });
+    });
+
+
+    // Hàm tải modal tạo category
+    function loadCreateCategoryModal(parentId, parentName) {
+        // Hiển thị loading trong modal
+        document.querySelector('#categoryModal .modal-body').innerHTML = `
+                <div class="d-flex justify-content-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+            `;
+
+        // Cập nhật title của modal
+        if (parentId) {
+            document.getElementById('categoryModalLabel').innerHTML =
+                '<i class="bi bi-folder-plus me-2"></i>Create Subcategory under "' + parentName + '"';
+        } else {
+            document.getElementById('categoryModalLabel').innerHTML =
+                '<i class="bi bi-folder-plus me-2"></i>Create Root Category';
+        }
+
+        // Hiển thị modal
+        var modalEl = new bootstrap.Modal(document.getElementById('categoryModal'));
+        modalEl.show();
+
+        // Tạo URL với parentId nếu có
+        let url = '@Url.Action("OpenCreateModal", "Category")';
+        if (parentId) {
+            url += '?parentId=' + parentId;
+        }
+
+        // Load content
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('#categoryModal .modal-body').innerHTML = html;
+                // QUAN TRỌNG: Khởi tạo lại validator sau khi load form
+                $.validator.unobtrusive.parse('#categoryModal');
+            })
+            .catch(error => {
+                document.querySelector('#categoryModal .modal-body').innerHTML =
+                    `<div class="alert alert-danger">Failed to load form: ${error.message}</div>`;
+            });
+    }
+
+    // Callback function khi create thành công
+    function onCreateSuccess(response) {
+        if (response.success) {
+            var modalEl = document.getElementById('categoryModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+            showToast('success', 'Category created successfully');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('error', 'Please check the form for errors');
+        }
+    }
+
+    function onCreateFailure(xhr, status, error) {
+        showToast('error', `Failed to create category: ${error}`);
+    }
+
+    // Callback function khi edit thành công
+    function onEditSuccess(response) {
+        if (response.success) {
+            var modalEl = document.getElementById('categoryModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+            showToast('success', 'Category updated successfully');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('error', 'Please check the form for errors');
+        }
+    }
+    // Xử lý hiển thị modal xác nhận xóa
+    $(document).on('click', '.open-delete-modal', function () {
+        var categoryId = $(this).data('id');
+        var categoryName = $(this).data('name');
+
+        console.log("Opening delete modal for:", categoryName, "with ID:", categoryId);
+
+        $('#deleteCategoryId').val(categoryId);
+        $('#deleteCategoryName').text(categoryName);
+
+        $('#deleteCategoryModal').modal('show');
+    });
+
+    // Xử lý khi người dùng xác nhận xóa
+    $('#deleteCategoryForm').submit(function (e) {
+        e.preventDefault();
+
+        var categoryId = $('#deleteCategoryId').val();
+        var categoryName = $('#deleteCategoryName').text();
+        var submitBtn = $(this).find('button[type="submit"]');
+        var originalBtnHtml = submitBtn.html();
+
+        // Disable button and show loading
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...');
+
+        // Gửi AJAX request để xóa Category
+        $.ajax({
+            url: '/Category/Delete/' + categoryId,
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function (response) {
+                $('#deleteCategoryModal').modal('hide');
+
+                if (response.success) {
+                    showToast('success', `Category "${categoryName}" deleted successfully`);
+
+                    // Reload trang sau khi xóa để cập nhật cây thư mục
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showToast('error', response.message || 'Failed to delete category');
+                }
+
+                // Reset button state
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+            },
+            error: function (xhr) {
+                $('#deleteCategoryModal').modal('hide');
+                showToast('error', 'An error occurred while deleting the category');
+
+                // Reset button state
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+            }
+        });
+    });
+
+    function onEditFailure(xhr, status, error) {
+        showToast('error', `Failed to update category: ${error}`);
+    }
+</script>
+
+<style>
+    .tree {
+        list-style: none;
+        padding-left: 0;
+    }
+    .tree li {
+        padding: 6px 0;
+    }
+    .tree ul {
+        list-style: none;
+        padding-left: 20px;
+        border-left: 1px dashed #ccc;
+        margin-left: 10px;
+    }
+    .category-tree .inactive {
+        color: #999;
+        font-style: italic;
+    }
+    .category-node {
+        display: flex;
+        align-items: center;
+    }
+    .category-toggle {
+        cursor: pointer;
+        margin-right: 5px;
+        width: 16px;
+        text-align: center;
+    }
+    .category-actions {
+        margin-left: 10px;
+    }
+    .category-actions button {
+        margin-left: 5px;
+        font-size: 14px;
+        border: none;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+    }
+    .category-icon {
+        margin-right: 8px;
+        color: #6c757d;
+    }
+</style>
 }
