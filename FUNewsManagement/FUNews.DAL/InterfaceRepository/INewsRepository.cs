@@ -10,14 +10,10 @@ namespace FUNews.DAL.InterfaceRepository
 {
     public interface INewsRepository : IBaseRepository<NewsArticle, String>
     {
+
+        Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate);
+
+        Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy);
         Task<List<NewsArticle>> GetOwnedNews(short id);
     }
-	public interface INewsRepository : IBaseRepository<NewsArticle, String>
-	{
-		Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate);
-
-		Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy);
-
-
-	}
 }

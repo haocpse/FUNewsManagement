@@ -47,6 +47,7 @@ namespace FUNewsManagement
             builder.Services.AddScoped<INewsTagService, NewsTagService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IReportService, ReportService>();
+            builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 
             // 4. Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);

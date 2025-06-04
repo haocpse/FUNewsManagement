@@ -1,3 +1,5 @@
+@using System.Security.Claims
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,35 +26,61 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Tag" asp-action="Index">Tags</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
-                    </li>
-                  	<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Authen" asp-action="Index">Login</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="SystemAccount" asp-action="UserProfile">UserProfile</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="SystemAccount" asp-action="Update">Update</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="News" asp-action="Index">News</a>
-						</li>
+                    @{
+                        var isAuthenticated = User.Identity.IsAuthenticated;
+                        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                    }
+                    <ul class="navbar-nav flex-grow-1">
+                        <!-- Luôn hiển thị -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="ArticleReport">Report</a>
-                        </li
-                </ul>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+
+                        @if (isAuthenticated && role == "1") // Admin
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Category" asp-action="Index">Category</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Tag" asp-action="Index">Tags</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Report" asp-action="ArticleReport">Report</a>
+                            </li>
+                        }
+
+                        @if (isAuthenticated) // Cả Admin và Staff
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="managementDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Management
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+                                    <li><a class="dropdown-item" asp-controller="SystemAccount" asp-action="UserProfile">User Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="SystemAccount" asp-action="Update">Update</a></li>
+                                    <li><a class="dropdown-item" asp-controller="News" asp-action="Index">News</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- Logout -->
+                            <li class="nav-item ms-auto">
+                                <form asp-controller="Authen" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Chưa đăng nhập -->
+                            <li class="nav-item ms-auto">
+                                <a class="nav-link text-dark" asp-controller="Authen" asp-action="Index">Login</a>
+                            </li>
+                        }
+                    </ul>
             </div>
         </div>
     </nav>

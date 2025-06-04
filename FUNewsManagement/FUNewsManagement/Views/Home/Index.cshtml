@@ -1,8 +1,93 @@
+﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "News Articles List";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .card-title-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-content-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* Chỉ 1 dòng */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    [title] {
+        cursor: help;
+    }
+</style>
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center text-primary">News Articles List</h2>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var news in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-lg border border-2 rounded-4">
+                    <a href="/News/Details/@news.NewsArticleId" class="stretched-link text-decoration-none text-dark">
+                        <div class="card-body position-relative">
+                            <h5 class="card-title text-primary fw-bold card-title-ellipsis" title="@news.NewsTitle">
+                                @(string.IsNullOrWhiteSpace(news.Headline) ? news.NewsTitle : news.Headline)
+                            </h5>
+
+                            <h6 class="card-subtitle mb-2 text-muted card-title-ellipsis" title="@news.Headline">
+                                @news.Headline
+                            </h6>
+
+                            <p class="card-text card-content-preview" title="@news.NewsContent">
+                                @news.NewsContent
+                            </p>
+
+                            <p>
+                                <strong>Category:</strong>
+                                <span class="badge bg-info text-dark">@news.Category?.CategoryName</span>
+                            </p>
+
+                            <p>
+                                <strong>Tags:</strong>
+                                @if (news.Tags != null && news.Tags.Any())
+                                {
+                                    foreach (var tag in news.Tags)
+                                    {
+                                        <span class="badge bg-secondary me-1">@tag.TagName</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">None</span>
+                                }
+                            </p>
+
+                            <p><strong>Source:</strong> @(!string.IsNullOrWhiteSpace(news.NewsSource) ? news.NewsSource : "N/A")</p>
+
+                            <p><strong>Created Date:</strong> @(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "Unknown")</p>
+
+                            <p>
+                                <strong>Status:</strong>
+                                @if (news.NewsStatus == true)
+                                {
+                                    <span class="badge bg-success">Published</span>
+                                }
+                                else if (news.NewsStatus == false)
+                                {
+                                    <span class="badge bg-danger">Hidden</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Unknown</span>
+                                }
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
 </div>

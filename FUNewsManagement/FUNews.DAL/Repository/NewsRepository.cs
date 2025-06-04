@@ -13,16 +13,6 @@ namespace FUNews.DAL.Repository
 	public class NewsRepository : BaseRepository<NewsArticle, String>, INewsRepository
 	{
 		private readonly FUNewsDbContext _context;
-
-
-        public Task<List<NewsArticle>> GetOwnedNews(short id) 
-        {
-            return _context.NewsArticles
-                  .Where(n => n.CreatedById == id)
-                  .ToListAsync();
-        }   
-
-    }
 		public NewsRepository(FUNewsDbContext context) : base(context)
 		{
 			_context = context;
@@ -76,7 +66,12 @@ namespace FUNews.DAL.Repository
 			};
 			return grouped;
 		}
+        public Task<List<NewsArticle>> GetOwnedNews(short id)
+        {
+            return _context.NewsArticles
+                  .Where(n => n.CreatedById == id)
+                  .ToListAsync();
+        }
 
-
-	}
+    }
 }
