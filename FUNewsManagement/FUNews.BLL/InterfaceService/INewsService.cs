@@ -19,5 +19,8 @@ namespace FUNews.BLL.InterfaceService
         Task<NewsResponse> GetById(String id);
 
         Task<List<NewsResponse>> OverriedGetAllAsync();
+
+        Task<NewsResponse> ApproveNewsAsync(String id);
+        Task<List<NewsResponse>> GetNewsPendingApproval();
     }
 }

@@ -25,7 +25,8 @@ namespace FUNewsManagement.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var newsList = await _newsService.OverriedGetAllAsync(); // user id
+            var AccountId = HttpContext.Session.GetInt32("AccountId");
+            var newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString())); // user id
             return View(newsList);
         }
         public async Task<IActionResult> Create()
@@ -105,6 +106,20 @@ namespace FUNewsManagement.Controllers
         {
             await _newsService.DeleteNews(id);
             return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Approve(string id)
+        {
+            var success = await _newsService.ApproveNewsAsync(id);
+            return Json(new { success });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Approve()
+        {
+            var pendingNews = await _newsService.GetNewsPendingApproval(); // trả về các bài chưa duyệt
+            return View("Approve", pendingNews); // View: Views/News/Approve.cshtml
         }
     }
 }

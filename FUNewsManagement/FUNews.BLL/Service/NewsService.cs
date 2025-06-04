@@ -87,7 +87,13 @@ namespace FUNews.BLL.Service
         public async Task<List<NewsResponse>> GetOwnedNews(short id)
         {
             var newsList = await _newsRepository.GetOwnedNews(id);
-            return _mapper.Map<List<NewsResponse>>(newsList);
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in newsList)
+            {
+                NewsResponse response = await BuildNewsResponse(item);
+                responses.Add(response);
+            }
+            return responses;
         }
 
         public async Task<NewsResponse> GetById(String id)
@@ -98,7 +104,7 @@ namespace FUNews.BLL.Service
 
         public async Task<List<NewsResponse>> OverriedGetAllAsync()
         {
-            var news = await _newsRepository.GetAllAsync();
+            var news = await _newsRepository.GetAllNewsForGuest();
             List<NewsResponse> responses = new List<NewsResponse>();
             foreach (var item in news)
             {
@@ -146,5 +152,27 @@ namespace FUNews.BLL.Service
                 CreatedDate = item.CreatedDate
             };
         }
+
+        public async Task<NewsResponse> ApproveNewsAsync(String id)
+        {
+            var news = await _newsRepository.GetByIdAsync(id);
+            news.NewsStatus = true;
+            await _newsRepository.UpdateAsync(news);   
+            return await BuildNewsResponse(news);
+        }
+
+        public async Task<List<NewsResponse>> GetNewsPendingApproval()
+        {
+            var news = await _newsRepository.GetNewsPendingApproval();
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                NewsResponse response = await BuildNewsResponse(item);
+                responses.Add(response);
+            }
+            return responses;
+
+        }
     }
 }
+

@@ -1,4 +1,5 @@
 ﻿using FuNews.Modals.DTOs.Response;
+using FuNews.Modals.DTOs.Response.News;
 using FUNews.DAL.Entity;
 using FUNews.DAL.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -73,5 +74,19 @@ namespace FUNews.DAL.Repository
                   .ToListAsync();
         }
 
+		public async Task<List<NewsArticle>> GetAllNewsForGuest()
+		{
+			return await _context.NewsArticles
+				.Where(n => n.NewsStatus.Value == true)
+				.ToListAsync();
+		}
+
+
+        public async Task<List<NewsArticle>> GetNewsPendingApproval()
+        {
+            return await _context.NewsArticles
+                .Where(n => n.NewsStatus.Value == false)
+                .ToListAsync();
+        }
     }
 }

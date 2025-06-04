@@ -1,0 +1,91 @@
+﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
+
+@{
+    ViewData["Title"] = "Phê duyệt bài viết";
+}
+
+<h2 class="mb-3">Phê duyệt bài viết</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Tiêu đề phụ</th>
+            <th>Danh mục</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NewsTitle</td>
+                <td>@item.Headline</td>
+                <td>@item.Category?.CategoryName</td>
+                <td>
+                    @if (item.NewsStatus == true)
+                    {
+                        <span class="text-success">Đã duyệt</span>
+                    }
+                    else
+                    {
+                        <span class="text-warning">Chờ duyệt</span>
+                    }
+                </td>
+                <td>@item.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="openPopup('/News/Details/@item.NewsArticleId')">Xem</button>
+
+                    @if (item.NewsStatus == false)
+                    {
+                        <button class="btn btn-sm btn-success" onclick="approveNews('@item.NewsArticleId')">Duyệt</button>
+                    }
+
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Xoá</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal hiển thị popup xem chi tiết -->
+<div class="modal fade" id="newsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openPopup(url) {
+            $.get(url, function (data) {
+                $("#modalContent").html(data);
+                $("#newsModal").modal("show");
+            });
+        }
+
+        function confirmDelete(id) {
+            if (confirm("Bạn có chắc chắn muốn xoá bài viết này không?")) {
+                $.post("/News/Delete", { id: id }, function (result) {
+                    if (result.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function approveNews(id) {
+            if (confirm("Bạn có chắc chắn muốn duyệt bài viết này không?")) {
+                $.post("/News/Approve", { id: id }, function (result) {
+                    if (result.success) {
+                        location.reload();
+                    } else {
+                        alert("Có lỗi xảy ra khi duyệt bài viết.");
+                    }
+                });
+            }
+        }
+    </script>
+}
