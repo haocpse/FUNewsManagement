@@ -1,4 +1,5 @@
-﻿using FUNews.DAL.Entity;
+﻿using FuNews.Modals.DTOs.Response;
+using FUNews.DAL.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,4 +12,12 @@ namespace FUNews.DAL.InterfaceRepository
     {
         Task<List<NewsArticle>> GetOwnedNews(short id);
     }
+	public interface INewsRepository : IBaseRepository<NewsArticle, String>
+	{
+		Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate);
+
+		Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy);
+
+
+	}
 }
