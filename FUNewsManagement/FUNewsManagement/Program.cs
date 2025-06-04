@@ -27,9 +27,11 @@ namespace FUNewsManagement
             //    → Bắt buộc phải có hai tham số: interface và class cụ thể
             builder.Services.AddScoped<ITagRepository, TagRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            
-            // 3. Đăng ký Service
-            builder.Services.AddScoped<ITagService, TagService>();
+			builder.Services.AddScoped<INewsRepository, NewsRepository>();
+
+			// 3. Đăng ký Service
+			builder.Services.AddScoped<ITagService, TagService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
             
             // 4. Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);
@@ -56,6 +58,10 @@ namespace FUNewsManagement
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+
+
+
         }
     }
 }

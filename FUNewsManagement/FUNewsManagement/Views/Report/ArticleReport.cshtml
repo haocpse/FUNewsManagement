@@ -1,0 +1,62 @@
+﻿@model FuNews.Modals.DTOs.Request.ReportRequest.ReportRequestModel
+
+@{
+    ViewData["Title"] = "Article-Report";
+}
+
+<h2>Article Report</h2>
+
+<form method="get" asp-action="ArticleReport">
+    <div>
+        <label>Start Date:</label>
+        <input type="date" name="startDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div>
+        <label>End Date:</label>
+        <input type="date" name="endDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div>
+        <label>Group By:</label>
+        <select name="groupBy">
+            <option value="">--Select--</option>
+            <option value="day" selected="@(Model.GroupBy == "day" ? "selected" : null)">Day</option>
+            <option value="month" selected="@(Model.GroupBy == "month" ? "selected" : null)">Month</option>
+            <option value="year" selected="@(Model.GroupBy == "year" ? "selected" : null)">Year</option>
+        </select>
+    </div>
+    <button type="submit">Generate Report</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color:red">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+@if (Model.ReportItems != null)
+{
+    <h3>Report Results</h3>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Group</th>
+                <th>Article Count</th>
+                <!-- Các cột khác nếu có -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ReportItems)
+            {
+                <tr>
+                    <td>@item.Label</td>
+                    <td>@item.count</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,83 @@
+﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
+
+@{
+    ViewData["Title"] = "Danh sách bài báo";
+}
+
+<style>
+    .card-title-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-content-preview {
+        max-height: 4.5em; /* khoảng 3 dòng */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+</style>
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center text-primary">📰 Danh sách bài báo</h2>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var news in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-lg border border-2 rounded-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary fw-bold card-title-ellipsis" title="@news.NewsTitle">
+                            @news.NewsTitle
+                        </h5>
+
+                        <h6 class="card-subtitle mb-2 text-muted card-title-ellipsis" title="@news.Headline">
+                            @news.Headline
+                        </h6>
+
+                        <p class="card-text card-content-preview" title="@news.NewsContent">
+                            @news.NewsContent
+                        </p>
+
+                        <p>
+                            <strong>Chuyên mục:</strong>
+                            <span class="badge bg-info text-dark">@news.Category?.CategoryName</span>
+                        </p>
+
+                        <p>
+                            <strong>Thẻ:</strong>
+                            @if (news.Tags != null && news.Tags.Any())
+                            {
+                                foreach (var tag in news.Tags)
+                                {
+                                    <span class="badge bg-secondary me-1">@tag.TagName</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Không có</span>
+                            }
+                        </p>
+
+                        <p><strong>Nguồn:</strong> @news.NewsSource</p>
+                        <p><strong>Ngày tạo:</strong> @news.CreatedDate?.ToString("dd/MM/yyyy")</p>
+                        <p>
+                            <strong>Trạng thái:</strong>
+                            @if (news.NewsStatus == true)
+                            {
+                                <span class="badge bg-success">Công khai</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Ẩn</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

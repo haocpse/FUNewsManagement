@@ -1,4 +1,5 @@
-﻿using FUNews.DAL.Entity;
+﻿using FuNews.Modals.DTOs.Response.News;
+using FUNews.DAL.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace FUNews.BLL.InterfaceService
 {
     public interface INewsService : IBaseService<NewsArticle, String>
     {
+        Task<List<NewsResponse>> GetAllNews();
     }
 }
