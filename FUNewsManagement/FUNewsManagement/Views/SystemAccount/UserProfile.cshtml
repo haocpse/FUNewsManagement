@@ -1,0 +1,19 @@
+﻿@model FuNews.Modals.DTOs.Response.AccountDetailResponse
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<h2 class="text-center">Account infomation</h2>
+
+<div class="card mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h4 class="card-title">@Model.AccountName</h4>
+        <p><strong>Email:</strong> @Model.AccountEmail</p>
+        <p><strong>Name:</strong> @Model.AccountName</p>
+        <p><strong>Role:</strong> @(Model.AccountRole == 1 ? "Admin" : "User")</p>
+
+
+        <a href="@Url.Action("Update", "SystemAccount", new { id = Model.AccountId })" class="btn btn-primary mt-3">Update information</a>
+    </div>
+</div>
