@@ -5,6 +5,7 @@ using FUNews.DAL.InterfaceRepository;
 using FUNews.DAL.Repository;
 using FUNews.Modals.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace FUNewsManagement
 {
@@ -17,6 +18,14 @@ namespace FUNewsManagement
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             
+            // Add Authentication
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Authen/Index";
+                    options.AccessDeniedPath = "/Home/Error";
+                });
+            
             // 1. Đăng ký DbContext với connection string
             builder.Services.AddDbContext<FUNewsDbContext>(options =>
                 options.UseSqlServer(
@@ -24,15 +33,26 @@ namespace FUNewsManagement
                 ));
             
             // 2. Đăng ký Repository
-            //    → Bắt buộc phải có hai tham số: interface và class cụ thể
             builder.Services.AddScoped<ITagRepository, TagRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            
+            builder.Services.AddScoped<ISystemAccountRepository, SystemAccountRepository>();
+
             // 3. Đăng ký Service
             builder.Services.AddScoped<ITagService, TagService>();
-            
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
             // 4. Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(TagMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(CategoryMappingProfile).Assembly);
+
+            // Add session services
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -40,16 +60,18 @@ namespace FUNewsManagement
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
+            // Add authentication middleware before authorization
+            app.UseAuthentication();
             app.UseAuthorization();
+            
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",

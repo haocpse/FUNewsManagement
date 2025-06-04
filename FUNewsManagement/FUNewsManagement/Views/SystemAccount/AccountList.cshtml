@@ -1,0 +1,34 @@
+﻿@model FuNews.Modals.DTOs.Response.AccountListResponse
+
+@{
+    ViewData["Title"] = "Account List";
+}
+
+<h2 class="text-center">Account List</h2>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Account ID</th>
+            <th>Tên tài khoản</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var account in Model.Accounts)
+        {
+            <tr>
+                <td>@account.AccountId</td>
+                <td>@account.AccountName</td>
+                <td>@account.AccountEmail</td>
+                <td>@(account.AccountRole == 1 ? "Admin" : "User")</td>
+                <td>
+                    <a href="@Url.Action("GetProfile", "SystemAccount", new { id = account.AccountId })" class="btn btn-sm btn-info">Xem</a>
+                    <a href="@Url.Action("Update", "SystemAccount", new { id = account.AccountId })" class="btn btn-sm btn-warning">Sửa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
