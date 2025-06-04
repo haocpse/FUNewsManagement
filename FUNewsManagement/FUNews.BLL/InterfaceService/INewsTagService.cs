@@ -11,7 +11,7 @@ namespace FUNews.BLL.InterfaceService
     public interface INewsTagService
     {
         Task AddNewsTag(String newsId, List<int> tagIds);
-        Task UpdateNewsTag(String newsId, List<NewsTagRequest> tagIds);
+        Task UpdateNewsTag(String newsId, List<int>? tagIds);
 
         Task<List<NewsTag>> GetAllByNewsIdAsync(String News);
 

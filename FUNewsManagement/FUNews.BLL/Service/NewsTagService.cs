@@ -32,7 +32,7 @@ namespace FUNews.BLL.Service
             }
         }
 
-        public async Task UpdateNewsTag(String newsId, List<NewsTagRequest> tagIds)
+        public async Task UpdateNewsTag(String newsId, List<int>? tagIds)
         {
             await _newsTagRepository.DeleteAsync(newsId);
             foreach (var tagId in tagIds)
@@ -41,7 +41,7 @@ namespace FUNews.BLL.Service
                    new()
                    {
                        NewsArticleId = newsId,
-                       TagId = tagId.TagId,
+                       TagId = tagId
                    });
             }
         }

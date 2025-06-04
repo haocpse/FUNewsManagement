@@ -8,6 +8,10 @@
         <input asp-for="NewsTitle" class="form-control" />
     </div>
     <div class="form-group">
+        <label>Tiêu đề phụ</label>
+        <textarea asp-for="Headline" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
         <label>Nội dung</label>
         <textarea asp-for="NewsContent" class="form-control"></textarea>
     </div>
@@ -16,19 +20,39 @@
         <input asp-for="NewsSource" class="form-control" />
     </div>
     <div class="form-group">
-        <label>Danh mục</label>
-        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
+        <label>Danh mục</label><br />
+        @foreach (var category in (List<SelectListItem>)ViewBag.Categories)
+        {
+            <div class="form-check form-check-inline">
+                <input class="form-check-input"
+                       type="radio"
+                       name="CategoryId"
+                       value="@category.Value"
+                @(Model.CategoryId.ToString() == category.Value ? "checked" : "") />
+                <label class="form-check-label">@category.Text</label>
+            </div>
+        }
     </div>
     <div class="form-group">
-        <label>Tags</label>
-        <select asp-for="Tags" class="form-control" multiple asp-items="ViewBag.Tags"></select>
+        <label>Tags</label><br />
+        @foreach (var tag in (List<SelectListItem>)ViewBag.Tags)
+        {
+            <div class="form-check form-check-inline">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="TagIds[]"
+                       value="@tag.Value"
+                @(Model.TagIds != null && Model.TagIds.Contains(short.Parse(tag.Value)) ? "checked" : "") />
+                <label class="form-check-label">@tag.Text</label>
+            </div>
+        }
     </div>
     <button type="submit" class="btn btn-primary">Cập nhật</button>
 </form>
 
 @section Scripts {
     <script>
-        $("#updateNewsForm").submit(function (e) {
+        $("#newsForm").submit(function (e) {
             e.preventDefault();
             $.ajax({
                 type: "POST",
@@ -37,10 +61,15 @@
                 success: function (response) {
                     if (response.success) {
                         $("#newsModal").modal("hide");
-                        location.reload();
+                        location.reload(); // Tải lại danh sách sau khi tạo
+                    } else {
+                        // Xử lý lỗi nếu có
+                        $("#modalContent").html(response); // hiển thị lại form nếu có lỗi
                     }
                 }
             });
         });
+              
     </script>
+
 }

@@ -16,6 +16,6 @@ namespace FuNews.Modals.DTOs.Request.News
         public string? NewsSource { get; set; }
         public short? CategoryId { get; set; }
         public List<NewsTagRequest>? Tags { get; set; }
-         public List<short>? TagIds { get; set; }
+        public List<int>? TagIds { get; set; }
     }
 }

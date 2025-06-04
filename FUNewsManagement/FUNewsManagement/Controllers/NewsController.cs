@@ -37,7 +37,7 @@ namespace FUNewsManagement.Controllers
                     Value = c.CategoryId.ToString(),
                     Text = c.CategoryName
                 }).ToList();
-            var tags = await _tagService.GetAllAsync();
+            var tags = await _tagService.GetAllTagsAsync();
             ViewBag.Tags = tags
                 .Select(t => new SelectListItem
                 {
@@ -61,16 +61,7 @@ namespace FUNewsManagement.Controllers
         public async Task<IActionResult> Update(string id)
         {
             var news = await _newsService.GetById(id);
-            var newsTag = news.Tags;
-            List<NewsTagRequest> requests = new List<NewsTagRequest>();
-            foreach (var tag in newsTag)
-            {
-                requests.Add(new()
-                {
-                    TagId = tag.TagId,
-                    TagName = tag.TagName,
-                });
-            }
+
             var updateRequest = new UpdateRequest
             {
                 NewsArticleId = id,
@@ -79,21 +70,23 @@ namespace FUNewsManagement.Controllers
                 NewsSource = news.NewsSource,
                 CategoryId = news.Category?.CategoryId,
                 Headline = news.Headline,
-                Tags = requests
+                TagIds = news.Tags?.Select(t => t.TagId).ToList() // Gán TagId vào
             };
+
             ViewBag.Categories = (await _categoryService.GetAllAsync())
                 .Select(c => new SelectListItem
                 {
                     Value = c.CategoryId.ToString(),
                     Text = c.CategoryName
                 }).ToList();
-            ViewBag.Tags = (await _tagService.GetAllAsync())
+
+            ViewBag.Tags = (await _tagService.GetAllTagsAsync())
                 .Select(t => new SelectListItem
                 {
                     Value = t.TagId.ToString(),
                     Text = t.TagName
                 }).ToList();
-            return PartialView("_FormUpdatePartial", updateRequest);
+                        return PartialView("_FormUpdatePartial", updateRequest);
         }
 
         [HttpPost]

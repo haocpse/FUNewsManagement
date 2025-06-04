@@ -62,12 +62,17 @@ namespace FUNews.BLL.Service
             NewsArticle? news = await _newsRepository.GetByIdAsync(request.NewsArticleId);
             if (news != null)
             {
-                if (!request.Tags.IsNullOrEmpty())
+                if (!request.TagIds.IsNullOrEmpty())
                 {
-                    await _newsTagService.UpdateNewsTag(news.NewsArticleId, request.Tags);
+                    await _newsTagService.UpdateNewsTag(news.NewsArticleId, request.TagIds);
                 }
                 //news.UpdatedById = 
                 news.ModifiedDate = DateTime.Now;
+                news.CategoryId = request.CategoryId;
+                news.NewsTitle = request.NewsTitle;
+                news.NewsSource = request.NewsSource;
+                news.Headline = request.Headline;
+                news.NewsContent = request.NewsContent;
                 await _newsRepository.UpdateAsync(news);
             }
             return await BuildNewsResponse(news);
