@@ -5,6 +5,7 @@ namespace FUNewsManagement.Models.Request;
 public class CategoryRequest
 {
    
+    public short CategoryId { get; set; }
     public string CategoryName { get; set; } = string.Empty;
 
     

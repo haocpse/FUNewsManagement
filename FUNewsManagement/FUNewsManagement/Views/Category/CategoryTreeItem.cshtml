@@ -20,9 +20,13 @@
         </span>
         
         <div class="category-actions">
-            <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="text-primary" title="Edit">
+            <button type="button"
+                    class="btn btn-sm btn-link text-primary p-0 open-edit-modal"
+                    data-id="@Model.CategoryId"
+                    data-name="@Model.CategoryName"
+                    title="Edit">
                 <i class="fas fa-edit"></i>
-            </a>
+            </button>
             <button type="button" 
                     class="btn btn-sm btn-link text-success p-0 open-create-modal" 
                     data-parentid="@Model.CategoryId" 
@@ -30,9 +34,13 @@
                     title="Add Subcategory">
                 <i class="fas fa-plus"></i>
             </button>
-            <a asp-action="Delete" asp-route-id="@Model.CategoryId" class="text-danger" title="Delete">
+            <button type="button" 
+                    class="btn btn-sm btn-link text-danger p-0 open-delete-modal" 
+                    data-id="@Model.CategoryId" 
+                    data-name="@Model.CategoryName"
+                    title="Delete">
                 <i class="fas fa-trash"></i>
-            </a>
+            </button>
         </div>
     </div>
     
