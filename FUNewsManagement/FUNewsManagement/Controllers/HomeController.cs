@@ -1,3 +1,4 @@
+using FUNews.BLL.InterfaceService;
 using FUNewsManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -7,15 +8,17 @@ namespace FUNewsManagement.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly INewsService _newsService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, INewsService newsService)
         {
             _logger = logger;
+            _newsService = newsService;
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var list = await _newsService.OverriedGetAllAsync();
+            return View(list);
         }
 
         public IActionResult Privacy()

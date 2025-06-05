@@ -6,8 +6,7 @@
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">System Login</h2>
-
-    @if (TempData["LoginSuccess"] != null)
+    @if (TempData["LoginSuccess"] != null && User.Identity?.IsAuthenticated == true)
     {
         <div class="alert alert-success">
             @TempData["LoginSuccess"]

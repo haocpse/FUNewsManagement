@@ -23,12 +23,8 @@ public class CategoryService : ICategoryService
     {
         // Map request to entity
         var category = _mapper.Map<Category>(request);
-        
-        // Set default values if needed
-        if (!request.IsActive)
-        {
-            category.IsActive = true;
-        }
+
+        category.IsActive = request.IsActive;
         
         // Add to repository
         await _categoryRepository.AddAsync(category);
@@ -110,10 +106,7 @@ public class CategoryService : ICategoryService
         category.ParentCategoryId = request.ParentCategoryId;
         
         // Only update IsActive if provided
-        if (request.IsActive)
-        {
-            category.IsActive = request.IsActive;
-        }
+        category.IsActive = request.IsActive;
         
         // Update in repository
         await _categoryRepository.UpdateAsync(category);
