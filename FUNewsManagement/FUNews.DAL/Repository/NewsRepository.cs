@@ -71,6 +71,7 @@ namespace FUNews.DAL.Repository
         {
             return _context.NewsArticles
                   .Where(n => n.CreatedById == id)
+                  .OrderByDescending(n => n.CreatedDate)
                   .ToListAsync();
         }
 
@@ -78,6 +79,7 @@ namespace FUNews.DAL.Repository
 		{
 			return await _context.NewsArticles
 				.Where(n => n.NewsStatus.Value == true)
+				.OrderByDescending(n => n.CreatedDate)
 				.ToListAsync();
 		}
 
@@ -85,6 +87,7 @@ namespace FUNews.DAL.Repository
         {
             return await _context.NewsArticles
                 .Where(n => n.NewsStatus.Value == false)
+                .OrderByDescending(n => n.CreatedDate)
                 .ToListAsync();
         }
 
@@ -92,6 +95,7 @@ namespace FUNews.DAL.Repository
         {
             return await _context.NewsArticles
                 .Where(n => n.CategoryId == id)
+                .OrderByDescending(n => n.CreatedDate)
                 .FirstOrDefaultAsync();
         }
     }

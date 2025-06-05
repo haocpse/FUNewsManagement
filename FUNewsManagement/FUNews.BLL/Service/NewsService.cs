@@ -34,7 +34,7 @@ namespace FUNews.BLL.Service
             _tagRepository = tagRepository;
         }
 
-        public async Task<NewsResponse> CreateNews(NewsRequest request)
+        public async Task<NewsResponse> CreateNews(short id, NewsRequest request)
         {
             NewsArticle news = new()
             {
@@ -46,7 +46,7 @@ namespace FUNews.BLL.Service
                 NewsStatus = false,
                 CategoryId = request.CategoryId,
                 CreatedDate = DateTime.Now,
-                //CreatedById = ,
+                CreatedById = id,
                 ModifiedDate = DateTime.Now,
             };
             await _newsRepository.AddAsync(news);
@@ -57,7 +57,7 @@ namespace FUNews.BLL.Service
             return _mapper.Map<NewsResponse>(news);
         }
 
-        public async Task<NewsResponse> UpdateNews(UpdateRequest request)
+        public async Task<NewsResponse> UpdateNews(short id, UpdateRequest request)
         {
             NewsArticle? news = await _newsRepository.GetByIdAsync(request.NewsArticleId);
             if (news != null)
@@ -66,7 +66,7 @@ namespace FUNews.BLL.Service
                 {
                     await _newsTagService.UpdateNewsTag(news.NewsArticleId, request.TagIds);
                 }
-                //news.UpdatedById = 
+                news.UpdatedById = id;
                 news.ModifiedDate = DateTime.Now;
                 news.CategoryId = request.CategoryId;
                 news.NewsTitle = request.NewsTitle;

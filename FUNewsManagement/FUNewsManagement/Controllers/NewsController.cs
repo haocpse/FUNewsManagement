@@ -62,7 +62,8 @@ namespace FUNewsManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _newsService.CreateNews(request);
+                var AccountId = HttpContext.Session.GetInt32("AccountId");
+                await _newsService.CreateNews(short.Parse(AccountId.ToString()), request);
                 return Json(new { success = true });
             }
             return PartialView("_FormCreatePartial", request);
@@ -104,7 +105,8 @@ namespace FUNewsManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _newsService.UpdateNews(request);
+                var AccountId = HttpContext.Session.GetInt32("AccountId");
+                await _newsService.UpdateNews(short.Parse(AccountId.ToString()),  request);
                 return Json(new { success = true });
             }
             return PartialView("_FormUpdatePartial", request);

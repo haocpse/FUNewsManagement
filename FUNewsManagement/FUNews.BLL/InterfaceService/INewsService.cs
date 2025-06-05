@@ -11,8 +11,8 @@ namespace FUNews.BLL.InterfaceService
 {
     public interface INewsService : IBaseService<NewsArticle, String>
     {
-        Task<NewsResponse> CreateNews(NewsRequest request);
-        Task<NewsResponse> UpdateNews(UpdateRequest request);
+        Task<NewsResponse> CreateNews(short id, NewsRequest request);
+        Task<NewsResponse> UpdateNews(short id, UpdateRequest request);
         Task DeleteNews(String id);
         Task<List<NewsResponse>> GetOwnedNews(short id);
 
