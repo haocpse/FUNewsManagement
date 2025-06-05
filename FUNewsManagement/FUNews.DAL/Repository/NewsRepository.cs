@@ -10,64 +10,70 @@ using System.Threading.Tasks;
 
 namespace FUNews.DAL.Repository
 {
-	public class NewsRepository : BaseRepository<NewsArticle, String>, INewsRepository
-	{
-		private readonly FUNewsDbContext _context;
+    public class NewsRepository : BaseRepository<NewsArticle, String>, INewsRepository
+    {
+        private readonly FUNewsDbContext _context;
 
-		public NewsRepository(FUNewsDbContext context) : base(context)
-		{
-			_context = context;
-		}
+        public NewsRepository(FUNewsDbContext context) : base(context)
+        {
+            _context = context;
+        }
 
-		public async Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate)
-		{
-			return await _context.NewsArticles
-				.Where(a => a.CreatedDate >= startDate && a.CreatedDate <= endDate)
-				.ToListAsync();
-		}
+        public async Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate)
+        {
+            return await _context.NewsArticles
+                .Where(a => a.CreatedDate >= startDate && a.CreatedDate <= endDate)
+                .ToListAsync();
+        }
 
-		public async Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy)
-		{
-			var query = _context.NewsArticles
-				.Where(a => a.CreatedDate.HasValue && a.CreatedDate >= startDate && a.CreatedDate <= endDate);
+        public async Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy)
+        {
+            var query = _context.NewsArticles
+                .Where(n => n.CreatedDate.HasValue &&
+                            n.CreatedDate.Value >= startDate &&
+                            n.CreatedDate.Value <= endDate);
 
-			var grouped = groupBy.ToLower() switch
-			{
-				"day" => await query
-					.GroupBy(a => a.CreatedDate!.Value.Date)
-					.Select(g => new ReportItem
-					{
-						Label = g.Key.ToString("dd/MM/yyyy"),
-						count = g.Count()
-					})
-					.OrderBy(r => r.Label)
-					.ToListAsync(),
+            var grouped = groupBy.ToLower() switch
+            {
+                "day" => query
+                    .GroupBy(n => n.CreatedDate.Value.Date)
+                    .AsEnumerable() // chuyển sang client
+                    .Select(g => new ReportItem
+                    {
+                        Label = g.Key.ToString("dd/MM/yyyy"),
+                        count = g.Count()
+                    })
+                    .OrderBy(r => r.Label)
+                    .ToList(),
 
-				"month" => await query
-					.GroupBy(a => new { a.CreatedDate!.Value.Year, a.CreatedDate!.Value.Month })
-					.Select(g => new ReportItem
-					{
-						Label = $"Tháng {g.Key.Month}/{g.Key.Year}",
-						count = g.Count()
-					})
-					.OrderBy(r => r.Label)
-					.ToListAsync(),
+                "month" => query
+                    .GroupBy(n => new { n.CreatedDate.Value.Year, n.CreatedDate.Value.Month })
+                    .AsEnumerable()
+                    .Select(g => new ReportItem
+                    {
+                        Label = $"{g.Key.Month:D2}/{g.Key.Year}",
+                        count = g.Count()
+                    })
+                    .OrderBy(r => r.Label)
+                    .ToList(),
 
-				"year" => await query
-					.GroupBy(a => a.CreatedDate!.Value.Year)
-					.Select(g => new ReportItem
-					{
-						Label = g.Key.ToString(),
-						count = g.Count()
-					})
-					.OrderBy(r => r.Label)
-					.ToListAsync(),
+                "year" => query
+                    .GroupBy(n => n.CreatedDate.Value.Year)
+                    .AsEnumerable()
+                    .Select(g => new ReportItem
+                    {
+                        Label = g.Key.ToString(),
+                        count = g.Count()
+                    })
+                    .OrderBy(r => r.Label)
+                    .ToList(),
 
-				_ => throw new ArgumentException("Invalid groupBy value")
-			};
-			return grouped;
-		}
+                _ => throw new ArgumentException("Invalid groupBy value")
+            };
+
+            return await Task.FromResult(grouped); // vì đã xử lý xong, không cần EF gọi tiếp DB
+        }
 
 
-	}
+    }
 }
