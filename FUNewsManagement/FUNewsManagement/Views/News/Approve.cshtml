@@ -1,20 +1,20 @@
 ﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
 
 @{
-    ViewData["Title"] = "Phê duyệt bài viết";
+    ViewData["Title"] = "Approve Articles";
 }
 
-<h2 class="mb-3">Phê duyệt bài viết</h2>
+<h2 class="mb-3">Approve News Articles</h2>
 
 <table class="table table-bordered table-striped">
     <thead class="thead-dark">
         <tr>
-            <th>Tiêu đề</th>
-            <th>Tiêu đề phụ</th>
-            <th>Danh mục</th>
-            <th>Trạng thái</th>
-            <th>Ngày tạo</th>
-            <th>Thao tác</th>
+            <th>Title</th>
+            <th>Subtitle</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Created Date</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -27,30 +27,30 @@
                 <td>
                     @if (item.NewsStatus == true)
                     {
-                        <span class="text-success">Đã duyệt</span>
+                        <span class="text-success">Approved</span>
                     }
                     else
                     {
-                        <span class="text-warning">Chờ duyệt</span>
+                        <span class="text-warning">Pending</span>
                     }
                 </td>
                 <td>@item.CreatedDate?.ToString("dd/MM/yyyy")</td>
                 <td>
-                    <button class="btn btn-sm btn-info" onclick="openPopup('/News/Details/@item.NewsArticleId')">Xem</button>
+                    <button class="btn btn-sm btn-info" onclick="openPopup('/News/Details/@item.NewsArticleId')">View</button>
 
                     @if (item.NewsStatus == false)
                     {
-                        <button class="btn btn-sm btn-success" onclick="approveNews('@item.NewsArticleId')">Duyệt</button>
+                        <button class="btn btn-sm btn-success" onclick="approveNews('@item.NewsArticleId')">Approve</button>
                     }
 
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Xoá</button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- Modal hiển thị popup xem chi tiết -->
+<!-- Modal for displaying article details -->
 <div class="modal fade" id="newsModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="modalContent"></div>
@@ -67,7 +67,7 @@
         }
 
         function confirmDelete(id) {
-            if (confirm("Bạn có chắc chắn muốn xoá bài viết này không?")) {
+            if (confirm("Are you sure you want to delete this article?")) {
                 $.post("/News/Delete", { id: id }, function (result) {
                     if (result.success) {
                         location.reload();
@@ -77,12 +77,12 @@
         }
 
         function approveNews(id) {
-            if (confirm("Bạn có chắc chắn muốn duyệt bài viết này không?")) {
+            if (confirm("Are you sure you want to approve this article?")) {
                 $.post("/News/Approve", { id: id }, function (result) {
                     if (result.success) {
                         location.reload();
                     } else {
-                        alert("Có lỗi xảy ra khi duyệt bài viết.");
+                        alert("An error occurred while approving the article.");
                     }
                 });
             }
