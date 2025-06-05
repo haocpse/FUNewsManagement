@@ -1,12 +1,19 @@
+@using System.Security.Claims
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - FUNewsManagement</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/FUNewsManagement.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <!-- Thêm dòng này để render Styles section -->
+    @RenderSection("Styles", required: false)
 </head>
 <body>
 <header>
@@ -19,23 +26,67 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Tag" asp-action="Index">Tags</a>
-                    </li>
+                    @{
+                        var isAuthenticated = User.Identity.IsAuthenticated;
+                        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                    }
+                    <ul class="navbar-nav flex-grow-1">
+                        <!-- Luôn hiển thị -->
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="ArticleReport">Report</a>
                         </li>
                          <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="News" asp-action="Index">News</a>
                         </li>
-                </ul>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+
+                        @if (isAuthenticated && role == "1") // Chỉ Admin
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Admin Panel
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Index">Categories</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Tag" asp-action="Index">Tags</a></li>
+                                    <li><a class="dropdown-item" asp-controller="News" asp-action="Approve">Approve News</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Report" asp-action="ArticleReport">Report</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        @if (isAuthenticated) // Cả Admin và Staff
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="managementDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Management
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+                                    <li><a class="dropdown-item" asp-controller="SystemAccount" asp-action="UserProfile">User Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="SystemAccount" asp-action="Update">Update</a></li>
+                                    <li><a class="dropdown-item" asp-controller="News" asp-action="Index">News</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- Logout -->
+                            <li class="nav-item ms-auto">
+                                <form asp-controller="Authen" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Chưa đăng nhập -->
+                            <li class="nav-item ms-auto">
+                                <a class="nav-link text-dark" asp-controller="Authen" asp-action="Index">Login</a>
+                            </li>
+                        }
+                    </ul>
             </div>
         </div>
     </nav>
@@ -45,15 +96,14 @@
         @RenderBody()
     </main>
 </div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2025 - FUNewsManagement - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+	<footer class="border-top footer text-muted">
+		<div class="container">
+			&copy; 2025 - FUNewsManagement - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+		</div>
+	</footer>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

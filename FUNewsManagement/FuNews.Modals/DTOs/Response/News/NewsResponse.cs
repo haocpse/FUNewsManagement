@@ -9,6 +9,7 @@ namespace FuNews.Modals.DTOs.Response.News
 {
     public class NewsResponse
     {
+        public string? NewsArticleId { get; set; }
         public string? NewsTitle { get; set; }
         public string? Headline { get; set; }
         public string? NewsContent { get; set; }

@@ -1,5 +1,6 @@
 using AutoMapper;
 using FUNews.DAL.Entity;
+using FUNews.Modals.DTOs.Request;
 using FUNews.Modals.DTOs.Response;
 using FUNewsManagement.Models.Request;
 

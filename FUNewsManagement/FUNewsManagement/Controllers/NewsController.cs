@@ -1,57 +1,125 @@
-﻿using FuNews.Modals.DTOs.Response.News;
+﻿using FuNews.Modals.DTOs.Request._Tag;
+using FuNews.Modals.DTOs.Request.News;
 using FUNews.BLL.InterfaceService;
-using FUNews.Modals.DTOs.Response;
+using FUNews.BLL.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace YourAppNamespace.Controllers
+namespace FUNewsManagement.Controllers
 {
     public class NewsController : Controller
     {
 
         private readonly INewsService _newsService;
-        
-        public NewsController(INewsService newsService)
-        {
+        private readonly INewsTagService _newsTagService;
+        private readonly ITagService _tagService;
+        private readonly ICategoryService _categoryService;
 
-            _newsService = newsService;
-        }
-        public IActionResult Index()
+        public NewsController(INewsService newsService, INewsTagService newsTagService, ITagService tagService, ICategoryService categoryService)
         {
-            // Giả lập dữ liệu
-            var newsList = new List<NewsResponse>
+            _newsService = newsService;
+            _newsTagService = newsTagService;
+            _tagService = tagService;
+            _categoryService = categoryService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var AccountId = HttpContext.Session.GetInt32("AccountId");
+            var newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString())); // user id
+            return View(newsList);
+        }
+        public async Task<IActionResult> Create()
+        {
+            var categories = await _categoryService.GetAllAsync();
+            ViewBag.Categories = categories
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CategoryId.ToString(),
+                    Text = c.CategoryName
+                }).ToList();
+            var tags = await _tagService.GetAllTagsAsync();
+            ViewBag.Tags = tags
+                .Select(t => new SelectListItem
+                {
+                    Value = t.TagId.ToString(),
+                    Text = t.TagName
+                }).ToList();
+            return PartialView("_FormCreatePartial", new NewsRequest());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(NewsRequest request)
+        {
+            if (ModelState.IsValid)
             {
-                new NewsResponse
-                {
-                    NewsTitle = "Tiêu đề 1",
-                    Headline = "Tóm tắt 1",
-                    NewsContent = "Nội dung chi tiết 1",
-                    NewsSource = "Nguồn 1",
-                    CreatedDate = DateTime.Now,
-                    NewsStatus = true,
-                    Category = new CategoryResponse { CategoryName = "Chính trị" },
-                    Tags = new List<TagResponse>
-                    {
-                        new TagResponse { TagName = "Bầu cử" },
-                        new TagResponse { TagName = "Quốc hội" }
-                    }
-                },
-                new NewsResponse
-                {
-                    NewsTitle = "Tiêu đề 2",
-                    Headline = "Tóm tắt 2",
-                    NewsContent = "Nội dung chi tiết 2",
-                    NewsSource = "Nguồn 2",
-                    CreatedDate = DateTime.Now.AddDays(-1),
-                    NewsStatus = false,
-                    Category = new CategoryResponse { CategoryName = "Thể thao" },
-                    Tags = new List<TagResponse>
-                    {
-                        new TagResponse { TagName = "World Cup" }
-                    }
-                }
+                await _newsService.CreateNews(request);
+                return Json(new { success = true });
+            }
+            return PartialView("_FormCreatePartial", request);
+        }
+
+        public async Task<IActionResult> Update(string id)
+        {
+            var news = await _newsService.GetById(id);
+
+            var updateRequest = new UpdateRequest
+            {
+                NewsArticleId = id,
+                NewsTitle = news.NewsTitle,
+                NewsContent = news.NewsContent,
+                NewsSource = news.NewsSource,
+                CategoryId = news.Category?.CategoryId,
+                Headline = news.Headline,
+                TagIds = news.Tags?.Select(t => t.TagId).ToList() // Gán TagId vào
             };
 
-            return View(newsList);
+            ViewBag.Categories = (await _categoryService.GetAllAsync())
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CategoryId.ToString(),
+                    Text = c.CategoryName
+                }).ToList();
+
+            ViewBag.Tags = (await _tagService.GetAllTagsAsync())
+                .Select(t => new SelectListItem
+                {
+                    Value = t.TagId.ToString(),
+                    Text = t.TagName
+                }).ToList();
+                        return PartialView("_FormUpdatePartial", updateRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(UpdateRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                await _newsService.UpdateNews(request);
+                return Json(new { success = true });
+            }
+            return PartialView("_FormUpdatePartial", request);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _newsService.DeleteNews(id);
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Approve(string id)
+        {
+            var success = await _newsService.ApproveNewsAsync(id);
+            return Json(new { success });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Approve()
+        {
+            var pendingNews = await _newsService.GetNewsPendingApproval(); // trả về các bài chưa duyệt
+            return View("Approve", pendingNews); // View: Views/News/Approve.cshtml
         }
     }
 }

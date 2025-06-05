@@ -1,4 +1,5 @@
 ﻿using FuNews.Modals.DTOs.Response;
+using FuNews.Modals.DTOs.Response.News;
 using FUNews.DAL.Entity;
 using FUNews.DAL.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -68,12 +69,30 @@ namespace FUNews.DAL.Repository
                     .OrderBy(r => r.Label)
                     .ToList(),
 
-                _ => throw new ArgumentException("Invalid groupBy value")
-            };
-
-            return await Task.FromResult(grouped); // vì đã xử lý xong, không cần EF gọi tiếp DB
+				_ => throw new ArgumentException("Invalid groupBy value")
+			};
+			return grouped;
+		}
+        public Task<List<NewsArticle>> GetOwnedNews(short id)
+        {
+            return _context.NewsArticles
+                  .Where(n => n.CreatedById == id)
+                  .ToListAsync();
         }
 
+		public async Task<List<NewsArticle>> GetAllNewsForGuest()
+		{
+			return await _context.NewsArticles
+				.Where(n => n.NewsStatus.Value == true)
+				.ToListAsync();
+		}
 
+
+        public async Task<List<NewsArticle>> GetNewsPendingApproval()
+        {
+            return await _context.NewsArticles
+                .Where(n => n.NewsStatus.Value == false)
+                .ToListAsync();
+        }
     }
 }

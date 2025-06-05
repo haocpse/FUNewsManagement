@@ -9,8 +9,10 @@ namespace FUNews.DAL.InterfaceRepository
 {
     public interface INewsTagRepository
     {
+
         Task AddAsync(NewsTag entity);
         Task DeleteAsync(string id);
         Task<List<NewsTag>> GetAllByNewsIdAsync(String News);
+
     }
 }

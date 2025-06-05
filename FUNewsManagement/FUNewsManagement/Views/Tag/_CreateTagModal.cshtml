@@ -1,0 +1,23 @@
+@model FUNews.Modals.DTOs.Request.TagRequest
+
+@using (Html.BeginForm("Create", "Tag", FormMethod.Post, new { id = "frmCreateTag", @data_ajax = "true", @data_ajax_method = "POST", @data_ajax_mode = "replace", @data_ajax_success = "onCreateSuccess", @data_ajax_failure = "onCreateFailure" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="TagName" class="form-label">Tag Name</label>
+        <input asp-for="TagName" class="form-control" />
+        <span asp-validation-for="TagName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Note" class="form-label">Note (optional)</label>
+        <textarea asp-for="Note" class="form-control"></textarea>
+        <span asp-validation-for="Note" class="text-danger"></span>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    </div>
+}

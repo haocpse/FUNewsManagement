@@ -27,5 +27,11 @@ namespace FUNews.DAL.Entity
         // Navigation (optional)
         public ICollection<NewsArticle>? CreatedNewsArticles { get; set; }
         public ICollection<NewsArticle>? UpdatedNewsArticles { get; set; }
+
+        public static class Roles
+        {
+            public const int Staff = 1;
+            public const int Lecturer = 2;
+        }
     }
 }

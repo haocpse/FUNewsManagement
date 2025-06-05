@@ -1,0 +1,39 @@
+﻿@model FuNews.Modals.DTOs.Response.AccountListResponse
+
+@{
+    ViewData["Title"] = "Account List";
+}
+
+<h2 class="text-center">Account List</h2>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Account ID</th>
+            <th>User name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var account in Model.Accounts)
+        {
+            <tr>
+                <td>@account.AccountId</td>
+                <td>@account.AccountName</td>
+                <td>@account.AccountEmail</td>
+                <td>@(account.AccountRole switch
+                    {
+                        1 => "Staff",
+                        2 => "Lecturer",
+                        3 => "Admin",
+                        _ => "Unknown"
+                    })</td>
+                <td>
+                    <a href="@Url.Action("Update", "SystemAccount", new { id = account.AccountId })" class="btn btn-sm btn-warning">edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
