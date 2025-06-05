@@ -75,6 +75,10 @@
                                 </ul>
                             </li>
 
+                        }
+                        @if (isAuthenticated)
+                        {
+
                             <!-- Logout -->
                             <li class="nav-item ms-auto">
                                 <form asp-controller="Authen" asp-action="Logout" method="post" class="d-inline">

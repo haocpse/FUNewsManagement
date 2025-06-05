@@ -25,7 +25,7 @@ namespace FUNewsManagement.Controllers
         [HttpGet("/News/Details/{id}")]
         public async Task<IActionResult> Details(string id)
         {
-            var news = await _newsService.GetByIdAsync(id);
+            var news = await _newsService.GetById(id);
             if (news == null)
                 return NotFound();
 
