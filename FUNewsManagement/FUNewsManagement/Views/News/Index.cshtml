@@ -1,22 +1,22 @@
 ﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
 
 @{
-    ViewData["Title"] = "Danh sách bài viết";
+    ViewData["Title"] = "News Articles List";
 }
 
-<h2 class="mb-3">Danh sách bài viết của bạn</h2>
+<h2 class="mb-3">Your News Articles</h2>
 
-<button class="btn btn-primary mb-3" onclick="openPopup('/News/Create')">+ Tạo mới</button>
+<button class="btn btn-primary mb-3" onclick="openPopup('/News/Create')">+ Create New</button>
 
 <table class="table table-bordered table-striped">
     <thead class="thead-dark">
         <tr>
-            <th>Tiêu đề</th>
-            <th>Tiêu đề phụ</th>
-            <th>Danh mục</th>
-            <th>Trạng thái</th>
-            <th>Ngày tạo</th>
-            <th>Thao tác</th>
+            <th>Title</th>
+            <th>Subtitle</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Created Date</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -26,18 +26,18 @@
                 <td>@item.NewsTitle</td>
                 <td>@item.Headline</td>
                 <td>@item.Category?.CategoryName</td>
-                <td>@(item.NewsStatus == true ? "Đã duyệt" : "Chờ duyệt")</td>
+                <td>@(item.NewsStatus == true ? "Approved" : "Pending")</td>
                 <td>@item.CreatedDate?.ToString("dd/MM/yyyy")</td>
-                <td>
-                    <button class="btn btn-sm btn-warning" onclick="openPopup('/News/Update/@item.NewsArticleId')">Sửa</button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Xóa</button>
+                <td class="d-flex gap-2">
+                    <button class="btn btn-sm btn-warning" onclick="openPopup('/News/Update/@item.NewsArticleId')">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- Modal hiển thị popup form -->
+<!-- Modal for displaying popup form -->
 <div class="modal fade" id="newsModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="modalContent"></div>
@@ -54,7 +54,7 @@
         }
 
         function confirmDelete(id) {
-            if (confirm("Bạn có chắc chắn muốn xoá bài viết này không?")) {
+            if (confirm("Are you sure you want to delete this article?")) {
                 $.post("/News/Delete", { id: id }, function (result) {
                     if (result.success) {
                         location.reload();
@@ -63,7 +63,7 @@
             }
         }
 
-        // Bắt sự kiện submit từ bất kỳ form nào tên #newsForm (bao gồm Create/Edit)
+        // Handle submit events from any #newsForm (includes Create/Edit)
         $(document).on('submit', '#newsForm', function (e) {
             e.preventDefault();
 
@@ -74,9 +74,9 @@
                 success: function (response) {
                     if (response.success) {
                         $("#newsModal").modal("hide");
-                        location.reload(); // reload danh sách bài viết
+                        location.reload(); // reload news list
                     } else {
-                        // render lại partial nếu có lỗi validation
+                        // re-render partial view if validation errors
                         $("#modalContent").html(response);
                     }
                 }

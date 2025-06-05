@@ -31,7 +31,7 @@ namespace FUNewsManagement.Controllers
             List<NewsResponse> newsList = new();
             if (Role == 3)
             {
-                newsList = await _newsService.OverriedGetAllAsync();
+                newsList = await _newsService.GetAllForAdmin();
             } else
             {
                 newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()));

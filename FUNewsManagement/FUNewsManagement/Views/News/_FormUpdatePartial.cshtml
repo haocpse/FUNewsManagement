@@ -1,75 +1,135 @@
 ﻿@model FuNews.Modals.DTOs.Request.News.UpdateRequest
 
-<form asp-action="Update" method="post" id="newsForm">
+<form asp-action="Update" method="post" id="newsForm" class="needs-validation p-3" novalidate>
     <input type="hidden" asp-for="NewsArticleId" />
 
-    <div class="form-group">
-        <label>Tiêu đề</label>
-        <input asp-for="NewsTitle" class="form-control" />
+    <div class="mb-4">
+        <label for="NewsTitle" class="form-label fw-medium">Title</label>
+        <input asp-for="NewsTitle" class="form-control form-control-lg" placeholder="Enter news title" required />
+        <span asp-validation-for="NewsTitle" class="text-danger small"></span>
     </div>
-    <div class="form-group">
-        <label>Tiêu đề phụ</label>
-        <textarea asp-for="Headline" class="form-control"></textarea>
+    
+    <div class="mb-4">
+        <label for="Headline" class="form-label fw-medium">Subtitle</label>
+        <textarea asp-for="Headline" class="form-control" rows="2" placeholder="Enter subtitle or brief description"></textarea>
+        <span asp-validation-for="Headline" class="text-danger small"></span>
     </div>
-    <div class="form-group">
-        <label>Nội dung</label>
-        <textarea asp-for="NewsContent" class="form-control"></textarea>
+    
+    <div class="mb-4">
+        <label for="NewsContent" class="form-label fw-medium">Content</label>
+        <textarea asp-for="NewsContent" class="form-control" rows="5" placeholder="Enter news content" required></textarea>
+        <span asp-validation-for="NewsContent" class="text-danger small"></span>
     </div>
-    <div class="form-group">
-        <label>Nguồn</label>
-        <input asp-for="NewsSource" class="form-control" />
+    
+    <div class="mb-4">
+        <label for="NewsSource" class="form-label fw-medium">Source</label>
+        <input asp-for="NewsSource" class="form-control" placeholder="Enter news source" />
+        <span asp-validation-for="NewsSource" class="text-danger small"></span>
     </div>
-    <div class="form-group">
-        <label>Danh mục</label><br />
-        @foreach (var category in (List<SelectListItem>)ViewBag.Categories)
-        {
-            <div class="form-check form-check-inline">
-                <input class="form-check-input"
-                       type="radio"
-                       name="CategoryId"
-                       value="@category.Value"
-                @(Model.CategoryId.ToString() == category.Value ? "checked" : "") />
-                <label class="form-check-label">@category.Text</label>
-            </div>
-        }
+    
+    <div class="mb-4">
+        <label class="form-label fw-medium d-block">Category</label>
+        <div class="row row-cols-2 g-3 mb-2 ps-2 pe-2">
+            @foreach (var category in (List<SelectListItem>)ViewBag.Categories)
+            {
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="CategoryId"
+                               id="category-@category.Value"
+                               value="@category.Value"
+                               @(Model.CategoryId.ToString() == category.Value ? "checked" : "") 
+                               required />
+                        <label class="form-check-label" for="category-@category.Value">@category.Text</label>
+                    </div>
+                </div>
+            }
+        </div>
+        <span asp-validation-for="CategoryId" class="text-danger small"></span>
     </div>
-    <div class="form-group">
-        <label>Tags</label><br />
-        @foreach (var tag in (List<SelectListItem>)ViewBag.Tags)
-        {
-            <div class="form-check form-check-inline">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="TagIds[]"
-                       value="@tag.Value"
-                @(Model.TagIds != null && Model.TagIds.Contains(short.Parse(tag.Value)) ? "checked" : "") />
-                <label class="form-check-label">@tag.Text</label>
-            </div>
-        }
+    
+    <div class="mb-4">
+        <label class="form-label fw-medium d-block">Tags</label>
+        <div class="row row-cols-2 g-3 mb-2 ps-2 pe-2">
+            @foreach (var tag in (List<SelectListItem>)ViewBag.Tags)
+            {
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="TagIds[]"
+                               id="tag-@tag.Value"
+                               value="@tag.Value"
+                               @(Model.TagIds != null && Model.TagIds.Contains(short.Parse(tag.Value)) ? "checked" : "") />
+                        <label class="form-check-label" for="tag-@tag.Value">@tag.Text</label>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="form-text text-muted small">Select one or more tags that apply to this news article.</div>
     </div>
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    
+    <div class="d-flex justify-content-end border-top pt-3 mt-4">
+        <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-1"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save me-1"></i>Update
+        </button>
+    </div>
 </form>
 
 @section Scripts {
     <script>
-        $("#newsForm").submit(function (e) {
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: $(this).attr("action"),
-                data: $(this).serialize(),
-                success: function (response) {
-                    if (response.success) {
-                        $("#newsModal").modal("hide");
-                        location.reload(); // Tải lại danh sách sau khi tạo
-                    } else {
-                        // Xử lý lỗi nếu có
-                        $("#modalContent").html(response); // hiển thị lại form nếu có lỗi
+        $(document).ready(function() {
+            $("#newsForm").submit(function (e) {
+                e.preventDefault();
+                
+                // Show loading state on button
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalBtnText = submitBtn.html();
+                submitBtn.html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Updating...');
+                submitBtn.prop('disabled', true);
+                
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr("action"),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            $("#newsModal").modal("hide");
+                            
+                            // Show success toast if available
+                            if (typeof showToast === 'function') {
+                                showToast('success', 'News article updated successfully');
+                            }
+                            
+                            // Reload the page after a short delay
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            // Display errors if any
+                            $("#modalContent").html(response);
+                            
+                            // Reset button state
+                            submitBtn.html(originalBtnText);
+                            submitBtn.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Show error toast if available
+                        if (typeof showToast === 'function') {
+                            showToast('error', 'Failed to update news article: ' + error);
+                        }
+                        
+                        // Reset button state
+                        submitBtn.html(originalBtnText);
+                        submitBtn.prop('disabled', false);
                     }
-                }
+                });
             });
         });
-              
     </script>
-
 }
