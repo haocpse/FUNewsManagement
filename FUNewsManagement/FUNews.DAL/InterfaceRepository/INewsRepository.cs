@@ -17,5 +17,7 @@ namespace FUNews.DAL.InterfaceRepository
         Task<List<NewsArticle>> GetOwnedNews(short id);
         Task<List<NewsArticle>> GetAllNewsForGuest();
         Task<List<NewsArticle>> GetNewsPendingApproval();
+        Task<NewsArticle> GetNewsByCategoryId(short categoryId);
+
     }
 }

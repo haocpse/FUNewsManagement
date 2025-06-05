@@ -21,6 +21,17 @@ namespace FUNewsManagement.Controllers
             return View(list);
         }
 
+
+        [HttpGet("/News/Details/{id}")]
+        public async Task<IActionResult> Details(string id)
+        {
+            var news = await _newsService.GetById(id);
+            if (news == null)
+                return NotFound();
+
+            return View(news); // s? tìm Views/News/Details.cshtml
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -1,5 +1,6 @@
 ﻿using FuNews.Modals.DTOs.Request._Tag;
 using FuNews.Modals.DTOs.Request.News;
+using FuNews.Modals.DTOs.Response.News;
 using FUNews.BLL.InterfaceService;
 using FUNews.BLL.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,15 @@ namespace FUNewsManagement.Controllers
         public async Task<IActionResult> Index()
         {
             var AccountId = HttpContext.Session.GetInt32("AccountId");
-            var newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString())); // user id
+            var Role = HttpContext.Session.GetInt32("AccountRole");
+            List<NewsResponse> newsList = new();
+            if (Role == 3)
+            {
+                newsList = await _newsService.OverriedGetAllAsync();
+            } else
+            {
+                newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()));
+            }
             return View(newsList);
         }
         public async Task<IActionResult> Create()
@@ -53,7 +62,8 @@ namespace FUNewsManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _newsService.CreateNews(request);
+                var AccountId = HttpContext.Session.GetInt32("AccountId");
+                await _newsService.CreateNews(short.Parse(AccountId.ToString()), request);
                 return Json(new { success = true });
             }
             return PartialView("_FormCreatePartial", request);
@@ -95,7 +105,8 @@ namespace FUNewsManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _newsService.UpdateNews(request);
+                var AccountId = HttpContext.Session.GetInt32("AccountId");
+                await _newsService.UpdateNews(short.Parse(AccountId.ToString()),  request);
                 return Json(new { success = true });
             }
             return PartialView("_FormUpdatePartial", request);

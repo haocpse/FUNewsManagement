@@ -12,11 +12,13 @@ public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
+    private readonly INewsRepository _newsRepository;
 
-    public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
+    public CategoryService(ICategoryRepository categoryRepository, IMapper mapper, INewsRepository newsRepository)
     {
         _categoryRepository = categoryRepository;
         _mapper = mapper;
+        _newsRepository = newsRepository;
     }
 
     public async Task<CategoryResponse> CreateAsync(CategoryRequest request)
@@ -37,13 +39,18 @@ public class CategoryService : ICategoryService
     {
         // Get the entity
         var category = await _categoryRepository.GetByIdAsync(id);
-        
+
         // Check if entity exists
         if (category == null)
         {
             return false;
         }
 
+        var exists = await _newsRepository.GetNewsByCategoryId(id);
+        if (category == null)
+        {
+            return false;
+        }
         // Check if the category has subcategories
         var hasSubcategories = await _categoryRepository.HasSubcategoriesAsync(id);
         if (hasSubcategories)
