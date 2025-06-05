@@ -32,6 +32,7 @@ namespace FUNews.DAL.Entity
         {
             public const int Staff = 1;
             public const int Lecturer = 2;
+            public const int Admin = 3;
         }
     }
 }

@@ -48,18 +48,24 @@ namespace FUNewsManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UserProfile(short id)
+        public async Task<IActionResult> UserProfile(short? id = null)
         {
-            var currentRole = HttpContext.Session.GetInt32("AccountRole");
             var currentUserId = HttpContext.Session.GetInt32("AccountId");
+            if (!currentUserId.HasValue)
+            {
+                return RedirectToAction("Index", "Authen");
+            }
 
-            // Only allow users to view their own profile unless they're admin
-            if (currentRole != _adminRole && currentUserId != id)
+            // If no id is provided, use the current user's id
+            short accountId = id ?? (short)currentUserId.Value;
+
+            // If not admin and trying to view another user's profile, forbid
+            if (accountId != currentUserId && HttpContext.Session.GetInt32("AccountRole") != _adminRole)
             {
                 return Forbid();
             }
 
-            var account = await _systemAccountService.GetAccountById(id);
+            var account = await _systemAccountService.GetAccountById(accountId);
             if (account == null) return NotFound();
 
             return View(account);
