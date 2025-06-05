@@ -85,7 +85,7 @@ namespace FUNewsManagement.Controllers
 
             var updateRequest = new UpdateAccountRequest
             {
-                AccountId = account.AccountId,
+                AccountId = id,
                 AccountName = account.AccountName,
                 AccountEmail = account.AccountEmail,
                 AccountRole = account.AccountRole
@@ -118,7 +118,7 @@ namespace FUNewsManagement.Controllers
                 {
                     return Json(new { success = false, message = "Invalid form data" });
                 }
-
+                Console.Write(request.AccountId);
                 var updatedAccount = await _systemAccountService.UpdateAccount(request, true);
                 if (updatedAccount == null)
                 {
