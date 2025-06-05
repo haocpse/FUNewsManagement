@@ -69,6 +69,7 @@ namespace FUNewsManagement.Controllers
                 HttpContext.Session.SetInt32("AccountId", result.AccountId);
                 HttpContext.Session.SetInt32("AccountRole", result.AccountRole ?? 0);
                 HttpContext.Session.SetString("AccountEmail", result.AccountEmail ?? string.Empty);
+                HttpContext.Session.SetString("AccountName", result.AccountName ?? string.Empty); // Thêm dòng này
 
                 TempData["LoginSuccess"] = $"Xin chào {result.AccountName}";
                 return RedirectToAction("Index", "Home");
@@ -82,11 +83,28 @@ namespace FUNewsManagement.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Authen");
+            try
+            {
+                // Clear authentication
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                // Clear session
+                HttpContext.Session.Clear();
+                
+                // Add success message
+                TempData["Message"] = "Successfully logged out";
+                
+                // Redirect to login page
+                return RedirectToAction("Index", "Authen");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during logout");
+                return RedirectToAction("Index", "Home");
+            }
         }
     }
 }
