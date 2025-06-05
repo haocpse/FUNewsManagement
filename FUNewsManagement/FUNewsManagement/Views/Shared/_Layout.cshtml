@@ -31,10 +31,7 @@
                         var role = User.FindFirst(ClaimTypes.Role)?.Value;
                     }
                     <ul class="navbar-nav flex-grow-1">
-                        <!-- Luôn hiển thị -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="ArticleReport">Report</a>
-                        </li>
+
        
                         @if (isAuthenticated && role == "3") // Chỉ Admin
                         {
@@ -48,10 +45,8 @@
                                     <li><a class="dropdown-item" asp-controller="Tag" asp-action="Index">Tags</a></li>
                                     <li><a class="dropdown-item" asp-controller="News" asp-action="Approve">Approve News</a></li>
                                     <li><a class="dropdown-item" asp-controller="Report" asp-action="ArticleReport">Report</a></li>
+                                    <li><a class="dropdown-item" asp-controller="News" asp-action="Index">Manage News</a></li>
                                 </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="News" asp-action="Index">News</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="SystemAccount" asp-action="AccountList">Manage account</a>
