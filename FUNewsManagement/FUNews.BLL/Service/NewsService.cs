@@ -173,6 +173,18 @@ namespace FUNews.BLL.Service
             return responses;
 
         }
+
+        public async Task<List<NewsResponse>> GetAllForAdmin()
+        {
+            var news = await _newsRepository.GetAllAsync();
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                NewsResponse response = await BuildNewsResponse(item);
+                responses.Add(response);
+            }
+            return responses;
+        }
     }
 }
 

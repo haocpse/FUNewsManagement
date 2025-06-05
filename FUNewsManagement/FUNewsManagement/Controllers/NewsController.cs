@@ -1,5 +1,6 @@
 ﻿using FuNews.Modals.DTOs.Request._Tag;
 using FuNews.Modals.DTOs.Request.News;
+using FuNews.Modals.DTOs.Response.News;
 using FUNews.BLL.InterfaceService;
 using FUNews.BLL.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,15 @@ namespace FUNewsManagement.Controllers
         public async Task<IActionResult> Index()
         {
             var AccountId = HttpContext.Session.GetInt32("AccountId");
-            var newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString())); // user id
+            var Role = HttpContext.Session.GetInt32("AccountRole");
+            List<NewsResponse> newsList = new();
+            if (Role == 3)
+            {
+                newsList = await _newsService.OverriedGetAllAsync();
+            } else
+            {
+                newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()));
+            }
             return View(newsList);
         }
         public async Task<IActionResult> Create()

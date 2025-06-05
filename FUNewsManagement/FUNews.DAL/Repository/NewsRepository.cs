@@ -81,12 +81,18 @@ namespace FUNews.DAL.Repository
 				.ToListAsync();
 		}
 
-
         public async Task<List<NewsArticle>> GetNewsPendingApproval()
         {
             return await _context.NewsArticles
                 .Where(n => n.NewsStatus.Value == false)
                 .ToListAsync();
+        }
+
+        public async Task<NewsArticle?> GetNewsByCategoryId(short id)
+        {
+            return await _context.NewsArticles
+                .Where(n => n.CategoryId == id)
+                .FirstOrDefaultAsync();
         }
     }
 }
