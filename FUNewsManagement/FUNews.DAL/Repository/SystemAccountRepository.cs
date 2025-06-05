@@ -31,7 +31,7 @@ namespace FUNews.DAL.Repository
             var account = await _context.SystemAccounts
                 .Where(a => a.AccountEmail == email)
                 .FirstOrDefaultAsync();
-            return account ?? throw new Exception("Account not found with the provided email.");
+            return account;
         }
     }
 }
