@@ -40,51 +40,60 @@ namespace FUNews.BLL.Service
         public async Task<AccountDetailResponse> UpdateAccount(UpdateAccountRequest request, bool isAdmin)
         {
             var account = await _systemAccountRepository.GetByIdAsync(request.AccountId);
-            if (account != null)
+            if (account == null)
             {
-                if (request.AccountName != null && account.AccountName != request.AccountName)
-                    account.AccountName = request.AccountName;
-
-                if (request.AccountPassword != null && account.AccountPassword != request.AccountPassword)
-                    account.AccountPassword = request.AccountPassword;
-
-                if (request.AccountEmail != null && request.AccountEmail != account.AccountEmail)
-                {
-                    var existingAccount = await _systemAccountRepository.GetByEmailAsync(request.AccountEmail);
-                    if (existingAccount != null)
-                    {
-                        throw new Exception("Email already exists.");
-                    }
-                    account.AccountEmail = request.AccountEmail;
-                }
-
-                // Only allow role updates if the user is an admin
-                if (isAdmin && request.AccountRole.HasValue)
-                {
-                    // Validate that the role is either Staff, Lecturer, or Admin
-                    if (request.AccountRole == SystemAccount.Roles.Staff ||
-                        request.AccountRole == SystemAccount.Roles.Lecturer ||
-                        request.AccountRole == int.Parse(_configuration["Roles:AdminRole"])) // Use int.Parse instead of GetValue
-                    {
-                        account.AccountRole = request.AccountRole;
-                    }
-                    else
-                    {
-                        throw new Exception("Invalid role specified.");
-                    }
-                }
-
-                await _systemAccountRepository.UpdateAsync(account);
-                return new AccountDetailResponse
-                {
-                    AccountId = account.AccountId,
-                    AccountEmail = account.AccountEmail,
-                    AccountName = account.AccountName,
-                    AccountRole = account.AccountRole,
-                    AccountPassword = account.AccountPassword
-                };
+                throw new Exception("Account not found");
             }
-            return null;
+
+            // Update name if provided
+            if (!string.IsNullOrWhiteSpace(request.AccountName))
+            {
+                account.AccountName = request.AccountName;
+            }
+
+            // Update password if provided
+            if (!string.IsNullOrWhiteSpace(request.AccountPassword))
+            {
+                account.AccountPassword = request.AccountPassword;
+            }
+
+            // Update email if provided and changed
+            if (!string.IsNullOrWhiteSpace(request.AccountEmail) && 
+                request.AccountEmail != account.AccountEmail)
+            {
+                var existingAccount = await _systemAccountRepository.GetByEmailAsync(request.AccountEmail);
+                if (existingAccount != null && existingAccount.AccountId != account.AccountId)
+                {
+                    throw new Exception("Email already exists.");
+                }
+                account.AccountEmail = request.AccountEmail;
+            }
+
+            // Only allow role updates if the user is an admin
+            if (isAdmin && request.AccountRole.HasValue)
+            {
+                if (request.AccountRole == SystemAccount.Roles.Staff ||
+                    request.AccountRole == SystemAccount.Roles.Lecturer ||
+                    request.AccountRole == SystemAccount.Roles.Admin)
+                {
+                    account.AccountRole = request.AccountRole;
+                }
+                else
+                {
+                    throw new Exception("Invalid role specified.");
+                }
+            }
+
+            await _systemAccountRepository.UpdateAsync(account);
+
+            return new AccountDetailResponse
+            {
+                AccountId = account.AccountId,
+                AccountEmail = account.AccountEmail,
+                AccountName = account.AccountName,
+                AccountRole = account.AccountRole,
+                AccountPassword = account.AccountPassword
+            };
         }
 
         public async Task<AccountDetailResponse> GetAccountById(short id)
@@ -120,6 +129,5 @@ namespace FUNews.BLL.Service
 
             return response;
         }
-
     }
 }

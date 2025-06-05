@@ -11,7 +11,15 @@
         <h4 class="card-title">@Model.AccountName</h4>
         <p><strong>Email:</strong> @Model.AccountEmail</p>
         <p><strong>Name:</strong> @Model.AccountName</p>
-        <p><strong>Role:</strong> @(Model.AccountRole == 1 ? "Admin" : "User")</p>
+        <p>
+            <strong>Role:</strong> @(Model.AccountRole switch
+            {
+                1 => "Staff",
+                2 => "Lecturer",
+                3 => "Admin",
+                _ => "Unknown"
+            })
+        </p>
 
 
         <a href="@Url.Action("Update", "SystemAccount", new { id = Model.AccountId })" class="btn btn-primary mt-3">Update information</a>
