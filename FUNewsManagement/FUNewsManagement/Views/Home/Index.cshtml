@@ -1,4 +1,4 @@
-﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
+﻿@model FuNews.Modals.DTOs.Response.Paging.PageResult<FuNews.Modals.DTOs.Response.News.NewsResponse>
 @{
     ViewData["Title"] = "News Articles List";
 }
@@ -24,70 +24,87 @@
 </style>
 
 <div class="container py-4">
-    <h2 class="mb-4 text-center text-primary">News Articles List</h2>
+    <h2 class="mb-4 text-center text-primary">FPT University News</h2>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var news in Model)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-lg border border-2 rounded-4">
-                    <a href="/News/Details/@news.NewsArticleId" class="stretched-link text-decoration-none text-dark">
-                        <div class="card-body position-relative">
-                            <h5 class="card-title text-primary fw-bold card-title-ellipsis" title="@news.NewsTitle">
-                                @(string.IsNullOrWhiteSpace(news.Headline) ? news.NewsTitle : news.Headline)
-                            </h5>
+    <div class="container mb-4">
+        <div class="nav nav-pills justify-content-center">
+            <a class="nav-link @(string.IsNullOrEmpty(Context.Request.Query["categoryId"]) ? "active" : "")" href="@Url.Action("Index", new { categoryId = (short?)null })">All</a>
 
-                            <h6 class="card-subtitle mb-2 text-muted card-title-ellipsis" title="@news.Headline">
-                                @news.Headline
-                            </h6>
-
-                            <p class="card-text card-content-preview" title="@news.NewsContent">
-                                @news.NewsContent
-                            </p>
-
-                            <p>
-                                <strong>Category:</strong>
-                                <span class="badge bg-info text-dark">@news.Category?.CategoryName</span>
-                            </p>
-
-                            <p>
-                                <strong>Tags:</strong>
-                                @if (news.Tags != null && news.Tags.Any())
-                                {
-                                    foreach (var tag in news.Tags)
-                                    {
-                                        <span class="badge bg-secondary me-1">@tag.TagName</span>
-                                    }
-                                }
-                                else
-                                {
-                                    <span class="text-muted">None</span>
-                                }
-                            </p>
-
-                            <p><strong>Source:</strong> @(!string.IsNullOrWhiteSpace(news.NewsSource) ? news.NewsSource : "N/A")</p>
-
-                            <p><strong>Created Date:</strong> @(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "Unknown")</p>
-
-                            <p>
-                                <strong>Status:</strong>
-                                @if (news.NewsStatus == true)
-                                {
-                                    <span class="badge bg-success">Published</span>
-                                }
-                                else if (news.NewsStatus == false)
-                                {
-                                    <span class="badge bg-danger">Hidden</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Unknown</span>
-                                }
-                            </p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        }
+            @foreach (var cat in (List<FUNews.Modals.DTOs.Response.CategoryResponse>)ViewBag.Categories)
+            {
+                <a class="nav-link @(Context.Request.Query["categoryId"] == cat.CategoryId.ToString() ? "active" : "")"
+                   href="@Url.Action("Index", new { categoryId = cat.CategoryId })">
+                    @cat.CategoryName
+                </a>
+            }
+        </div>
     </div>
+
+   
+        <div class="list-group">
+        @foreach (var news in Model.Items)
+        {
+            <a href="/News/Details/@news.NewsArticleId" class="list-group-item list-group-item-action py-3">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1 text-primary">@news.NewsTitle</h5>
+                    <small class="text-muted">@news.CreatedDate?.ToString("dd/MM/yyyy")</small>
+                </div>
+
+                <p class="mb-2 text-secondary">@news.NewsContent?.Substring(0, Math.Min(100, news.NewsContent.Length))...</p>
+
+                <div class="mb-1">
+                    <strong>Category:</strong>
+                    <span class="badge bg-info text-dark">@news.Category?.CategoryName</span>
+                </div>
+
+                <div class="mb-1">
+                    <strong>Tags:</strong>
+                    @if (news.Tags != null && news.Tags.Any())
+                    {
+                        @foreach (var tag in news.Tags)
+                        {
+                            <span class="badge bg-secondary me-1">@tag.TagName</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">None</span>
+                    }
+                </div>
+
+                <div class="text-muted">
+                    <strong>Source:</strong> @(!string.IsNullOrWhiteSpace(news.NewsSource) ? news.NewsSource : "N/A")
+                </div>
+                <div class="text-muted">
+                    <strong>Author:</strong> @(!string.IsNullOrWhiteSpace(news.AccountName) ? news.AccountName : "N/A")
+                </div>
+            </a>
+        }
+        </div>
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @{
+                var totalPages = (int)Math.Ceiling((double)Model.TotalItems / Model.PageSize);
+                var currentPage = Model.PageNumber;
+                var categoryId = Context.Request.Query["categoryId"];
+            }
+
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = currentPage - 1, categoryId })">Previous</a>
+            </li>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, categoryId })">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = currentPage + 1, categoryId })">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+   
 </div>

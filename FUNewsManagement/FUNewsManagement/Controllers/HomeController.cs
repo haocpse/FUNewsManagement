@@ -1,6 +1,11 @@
+using FuNews.Modals.DTOs.Request.Paging;
+using FuNews.Modals.DTOs.Response.News;
+using FuNews.Modals.DTOs.Response.Paging;
 using FUNews.BLL.InterfaceService;
+using FUNews.BLL.Service;
 using FUNewsManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace FUNewsManagement.Controllers
@@ -9,16 +14,36 @@ namespace FUNewsManagement.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly INewsService _newsService;
+        private readonly ICategoryService _categoryService;
 
-        public HomeController(ILogger<HomeController> logger, INewsService newsService)
+        public HomeController(ILogger<HomeController> logger, INewsService newsService, ICategoryService categoryService)
         {
             _logger = logger;
             _newsService = newsService;
+            _categoryService = categoryService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(short? categoryId, int pageNumber = 1, int pageSize = 5)
         {
-            var list = await _newsService.OverriedGetAllAsync();
-            return View(list);
+            var categories = await _categoryService.GetAllAsync();
+            ViewBag.Categories = categories;
+
+            var pagingRequest = new PagingRequest
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            PageResult<NewsResponse> pagedNews;
+
+            if (categoryId.HasValue)
+            {
+                pagedNews = await _newsService.GetNewsByCategoryAsync(categoryId, pagingRequest);
+            } else
+            {
+                pagedNews = await _newsService.OverriedGetAllAsync(pagingRequest);
+            }
+
+            return View(pagedNews);
         }
 
 

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using FuNews.Modals.DTOs.Request.News;
+using FuNews.Modals.DTOs.Request.Paging;
 using FuNews.Modals.DTOs.Response.News;
+using FuNews.Modals.DTOs.Response.Paging;
 using FUNews.BLL.InterfaceService;
 using FUNews.DAL.Entity;
 using FUNews.DAL.InterfaceRepository;
@@ -23,8 +25,9 @@ namespace FUNews.BLL.Service
         private readonly INewsTagRepository _newsTagRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagRepository _tagRepository;
+        private readonly ISystemAccountRepository _systemAccountRepository;
 
-        public NewsService(INewsRepository newsRepository, IMapper mapper, INewsTagService newsTagService, INewsTagRepository newsTagRepository, ICategoryRepository categoryRepository, ITagRepository tagRepository) : base(newsRepository)
+        public NewsService(INewsRepository newsRepository, IMapper mapper, INewsTagService newsTagService, INewsTagRepository newsTagRepository, ICategoryRepository categoryRepository, ITagRepository tagRepository, ISystemAccountRepository systemAccountRepository) : base(newsRepository)
         {
             _newsRepository = newsRepository;
             _mapper = mapper;
@@ -32,6 +35,7 @@ namespace FUNews.BLL.Service
             _newsTagRepository = newsTagRepository;
             _categoryRepository = categoryRepository;
             _tagRepository = tagRepository;
+            _systemAccountRepository = systemAccountRepository;
         }
 
         public async Task<NewsResponse> CreateNews(short id, NewsRequest request)
@@ -102,17 +106,21 @@ namespace FUNews.BLL.Service
             return await BuildNewsResponse(news);
         }
 
-        public async Task<List<NewsResponse>> OverriedGetAllAsync()
+        public async Task<PageResult<NewsResponse>> OverriedGetAllAsync(PagingRequest request)
         {
-            var news = await _newsRepository.GetAllNewsForGuest();
+            var (news, total) = await _newsRepository.GetAllNewsForGuest(request.PageNumber, request.PageSize);
             List<NewsResponse> responses = new List<NewsResponse>();
             foreach (var item in news)
             {
-                NewsResponse response = await BuildNewsResponse(item);
-                responses.Add( response );
+                responses.Add(await BuildNewsResponse(item));
             }
-            return responses;
-
+            return new PageResult<NewsResponse>
+            {
+                Items = responses,
+                TotalItems = total,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
         }
 
         private async Task<NewsResponse> BuildNewsResponse(NewsArticle item)
@@ -149,7 +157,8 @@ namespace FUNews.BLL.Service
                 },
                 NewsStatus = item.NewsStatus,
                 Tags = tagsRespone,
-                CreatedDate = item.CreatedDate
+                CreatedDate = item.CreatedDate,
+                AccountName = _systemAccountRepository.GetByIdAsync(item.CreatedById.Value).Result.AccountName
             };
         }
 
@@ -185,6 +194,25 @@ namespace FUNews.BLL.Service
             }
             return responses;
         }
+
+        public async Task<PageResult<NewsResponse>> GetNewsByCategoryAsync(short? categoryId, PagingRequest request)
+        {
+
+            var (news, total) = await _newsRepository.GetNewsByCategoryAsync(request.PageNumber, request.PageSize, categoryId);
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                responses.Add(await BuildNewsResponse(item));
+            }
+            return new PageResult<NewsResponse>
+            {
+                Items = responses,
+                TotalItems = total,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+        }
+
     }
 }
 

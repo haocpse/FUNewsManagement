@@ -18,5 +18,6 @@ namespace FuNews.Modals.DTOs.Response.News
         public bool? NewsStatus { get; set; }
         public List<TagResponse>? Tags { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string? AccountName { get; set; }
     }
 }

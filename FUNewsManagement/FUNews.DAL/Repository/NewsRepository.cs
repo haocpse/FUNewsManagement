@@ -81,13 +81,21 @@ namespace FUNews.DAL.Repository
                   .ToListAsync();
         }
 
-		public async Task<List<NewsArticle>> GetAllNewsForGuest()
+		public async Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForGuest(int pageNumber, int pageSize)
 		{
-			return await _context.NewsArticles
-				.Where(n => n.NewsStatus.Value == true)
-				.OrderByDescending(n => n.CreatedDate)
-				.ToListAsync();
-		}
+            var query = _dbSet
+                .Where(n => n.NewsStatus.Value == true)
+                .AsQueryable();
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
 
         public async Task<List<NewsArticle>> GetNewsPendingApproval()
         {
@@ -103,6 +111,22 @@ namespace FUNews.DAL.Repository
                 .Where(n => n.CategoryId == id)
                 .OrderByDescending(n => n.CreatedDate)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<(List<NewsArticle> Items, int TotalCount)> GetNewsByCategoryAsync(int pageNumber, int pageSize, short? categoryId)
+        {
+            var query = _dbSet
+                .Where(n => n.CategoryId == categoryId && n.NewsStatus.Value == true)
+                .AsQueryable();
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }

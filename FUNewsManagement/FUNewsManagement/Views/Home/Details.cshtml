@@ -1,66 +1,42 @@
 ﻿@model FuNews.Modals.DTOs.Response.News.NewsResponse
-@{
-    ViewData["Title"] = "News Article Details";
-}
 
 <div class="container py-4">
-    <h2 class="mb-4 text-center text-primary">News Article Details</h2>
+    <h2 class="mb-4 text-center text-primary">@(string.IsNullOrWhiteSpace(Model.Headline) ? Model.NewsTitle : Model.Headline)</h2>
 
     <div class="card shadow border-0 rounded-4">
         <div class="card-body">
-            <h3 class="card-title text-primary fw-bold mb-3">
-                @(string.IsNullOrWhiteSpace(Model.Headline) ? Model.NewsTitle : Model.Headline)
-            </h3>
-
-            <h5 class="card-subtitle mb-3 text-muted">
-                Title: @Model.NewsTitle
-            </h5>
-
-            <p class="card-text mb-4">
-                <strong>Content:</strong><br />
-                @Model.NewsContent
-            </p>
-
-            <p><strong>Source:</strong> @(!string.IsNullOrWhiteSpace(Model.NewsSource) ? Model.NewsSource : "N/A")</p>
-
-            <p>
-                <strong>Category:</strong>
-                <span class="badge bg-info text-dark">@Model.Category?.CategoryName</span>
-            </p>
-
-            <p>
-                <strong>Tags:</strong>
-                @if (Model.Tags != null && Model.Tags.Any())
-                {
-                    foreach (var tag in Model.Tags)
+            <div class="d-flex justify-content-between text-muted mb-3">
+                <div>
+                    <strong>Category:</strong> <span class="badge bg-info">@Model.Category?.CategoryName</span>
+                </div>
+                <div>
+                    <strong>Date:</strong> @(Model.CreatedDate?.ToString("dd/MM/yyyy") ?? "Unknown")
+                </div>
+            </div>
+            @if (Model.Tags != null && Model.Tags.Any())
+            {
+                <div class="mb-2">
+                    <strong>Tags:</strong>
+                    @foreach (var tag in Model.Tags)
                     {
                         <span class="badge bg-secondary me-1">@tag.TagName</span>
                     }
-                }
-                else
-                {
-                    <span class="text-muted">None</span>
-                }
-            </p>
+                </div>
+            }
+            <p><strong>Source:</strong> @(!string.IsNullOrWhiteSpace(Model.NewsSource) ? Model.NewsSource : "N/A")</p>
+            <hr />
 
-            <p><strong>Created Date:</strong> @(Model.CreatedDate?.ToString("dd/MM/yyyy") ?? "Unknown")</p>
+            <div class="mb-4">
+                @Model.NewsContent
+            </div>
+            <div class="d-flex justify-content-between text-muted mb-3">
+                <div>
 
-            <p>
-                <strong>Status:</strong>
-                @if (Model.NewsStatus == true)
-                {
-                    <span class="badge bg-success">Published</span>
-                }
-                else if (Model.NewsStatus == false)
-                {
-                    <span class="badge bg-danger">Hidden</span>
-                }
-                else
-                {
-                    <span class="badge bg-secondary">Unknown</span>
-                }
-            </p>
-
+                </div>
+                <div>
+                    <strong>Author:</strong> @(!string.IsNullOrWhiteSpace(Model.AccountName) ? Model.AccountName : "N/A")
+                </div>
+            </div>
             <a asp-action="Index" class="btn btn-outline-secondary mt-3">← Back to List</a>
         </div>
     </div>

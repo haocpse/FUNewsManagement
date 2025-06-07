@@ -15,9 +15,11 @@ namespace FUNews.DAL.InterfaceRepository
         Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate);
         Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy);
         Task<List<NewsArticle>> GetOwnedNews(short id);
-        Task<List<NewsArticle>> GetAllNewsForGuest();
+        Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForGuest(int pageNumber, int pageSize);
         Task<List<NewsArticle>> GetNewsPendingApproval();
         Task<NewsArticle> GetNewsByCategoryId(short categoryId);
+
+        Task<(List<NewsArticle> Items, int TotalCount)> GetNewsByCategoryAsync(int pageNumber, int pageSize, short? categoryId);
 
     }
 }
