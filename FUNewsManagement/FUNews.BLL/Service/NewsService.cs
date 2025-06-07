@@ -87,28 +87,94 @@ namespace FUNews.BLL.Service
             await _newsTagRepository.DeleteAsync(id);
             await _repository.DeleteAsync(id);
         }
-
-        public async Task<List<NewsResponse>> GetOwnedNews(short id)
-        {
-            var newsList = await _newsRepository.GetOwnedNews(id);
-            List<NewsResponse> responses = new List<NewsResponse>();
-            foreach (var item in newsList)
-            {
-                NewsResponse response = await BuildNewsResponse(item);
-                responses.Add(response);
-            }
-            return responses;
-        }
-
         public async Task<NewsResponse> GetById(String id)
         {
             var news = await _newsRepository.GetByIdAsync(id);
             return await BuildNewsResponse(news);
         }
 
+        public async Task<PageResult<NewsResponse>> GetOwnedNews(short id, PagingRequest request)
+        {
+            var (news, total) = await _newsRepository.GetOwnedNews(id, request.PageNumber, request.PageSize);
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                responses.Add(await BuildNewsResponse(item));
+            }
+            return new PageResult<NewsResponse>
+            {
+                Items = responses,
+                TotalItems = total,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+        }
+
         public async Task<PageResult<NewsResponse>> OverriedGetAllAsync(PagingRequest request)
         {
             var (news, total) = await _newsRepository.GetAllNewsForGuest(request.PageNumber, request.PageSize);
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                responses.Add(await BuildNewsResponse(item));
+            }
+            return new PageResult<NewsResponse>
+            {
+                Items = responses,
+                TotalItems = total,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+        }
+
+        public async Task<NewsResponse> ApproveNewsAsync(String id)
+        {
+            var news = await _newsRepository.GetByIdAsync(id);
+            news.NewsStatus = true;
+            await _newsRepository.UpdateAsync(news);   
+            return await BuildNewsResponse(news);
+        }
+
+        public async Task<PageResult<NewsResponse>> GetNewsPendingApproval(PagingRequest request)
+        {
+            var (news, total) = await _newsRepository.GetNewsPendingApproval(request.PageNumber, request.PageSize);
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                responses.Add(await BuildNewsResponse(item));
+            }
+            return new PageResult<NewsResponse>
+            {
+                Items = responses,
+                TotalItems = total,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+        }
+
+        public async Task<PageResult<NewsResponse>> GetAllForAdmin(PagingRequest request)
+        {
+            var (news, total) = await _newsRepository.GetAllNewsForAdmin(request.PageNumber, request.PageSize);
+            List<NewsResponse> responses = new List<NewsResponse>();
+            foreach (var item in news)
+            {
+                NewsResponse response = await BuildNewsResponse(item);
+                responses.Add(response);
+            }
+            return new PageResult<NewsResponse>
+            {
+                Items = responses,
+                TotalItems = total,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+        }
+
+        public async Task<PageResult<NewsResponse>> GetNewsByCategoryAsync(short? categoryId, PagingRequest request)
+        {
+
+            var (news, total) = await _newsRepository.GetNewsByCategoryAsync(request.PageNumber, request.PageSize, categoryId);
             List<NewsResponse> responses = new List<NewsResponse>();
             foreach (var item in news)
             {
@@ -159,57 +225,6 @@ namespace FUNews.BLL.Service
                 Tags = tagsRespone,
                 CreatedDate = item.CreatedDate,
                 AccountName = _systemAccountRepository.GetByIdAsync(item.CreatedById.Value).Result.AccountName
-            };
-        }
-
-        public async Task<NewsResponse> ApproveNewsAsync(String id)
-        {
-            var news = await _newsRepository.GetByIdAsync(id);
-            news.NewsStatus = true;
-            await _newsRepository.UpdateAsync(news);   
-            return await BuildNewsResponse(news);
-        }
-
-        public async Task<List<NewsResponse>> GetNewsPendingApproval()
-        {
-            var news = await _newsRepository.GetNewsPendingApproval();
-            List<NewsResponse> responses = new List<NewsResponse>();
-            foreach (var item in news)
-            {
-                NewsResponse response = await BuildNewsResponse(item);
-                responses.Add(response);
-            }
-            return responses;
-
-        }
-
-        public async Task<List<NewsResponse>> GetAllForAdmin()
-        {
-            var news = await _newsRepository.GetAllAsync();
-            List<NewsResponse> responses = new List<NewsResponse>();
-            foreach (var item in news)
-            {
-                NewsResponse response = await BuildNewsResponse(item);
-                responses.Add(response);
-            }
-            return responses;
-        }
-
-        public async Task<PageResult<NewsResponse>> GetNewsByCategoryAsync(short? categoryId, PagingRequest request)
-        {
-
-            var (news, total) = await _newsRepository.GetNewsByCategoryAsync(request.PageNumber, request.PageSize, categoryId);
-            List<NewsResponse> responses = new List<NewsResponse>();
-            foreach (var item in news)
-            {
-                responses.Add(await BuildNewsResponse(item));
-            }
-            return new PageResult<NewsResponse>
-            {
-                Items = responses,
-                TotalItems = total,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
             };
         }
 

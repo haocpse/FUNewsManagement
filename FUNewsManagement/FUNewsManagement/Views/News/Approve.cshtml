@@ -1,4 +1,4 @@
-﻿@model List<FuNews.Modals.DTOs.Response.News.NewsResponse>
+﻿@model FuNews.Modals.DTOs.Response.Paging.PageResult<FuNews.Modals.DTOs.Response.News.NewsResponse>
 
 @{
     ViewData["Title"] = "Approve Articles";
@@ -17,10 +17,14 @@
             <th>Actions</th>
         </tr>
     </thead>
+    @{
+        int stt = (Model.PageNumber - 1) * Model.PageSize + 1;
+    }
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Items)
         {
             <tr>
+                <td>@stt</td>
                 <td>@item.NewsTitle</td>
                 <td>@item.Headline</td>
                 <td>@item.Category?.CategoryName</td>
@@ -46,9 +50,35 @@
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Delete</button>
                 </td>
             </tr>
+            stt++;
         }
     </tbody>
 </table>
+
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        @{
+            var totalPages = (int)Math.Ceiling((double)Model.TotalItems / Model.PageSize);
+            var currentPage = Model.PageNumber;
+            var categoryId = Context.Request.Query["categoryId"];
+        }
+
+        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageNumber = currentPage - 1, categoryId })">Previous</a>
+        </li>
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, categoryId })">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageNumber = currentPage + 1, categoryId })">Next</a>
+        </li>
+    </ul>
+</nav>
 
 <!-- Modal for displaying article details -->
 <div class="modal fade" id="newsModal" tabindex="-1">

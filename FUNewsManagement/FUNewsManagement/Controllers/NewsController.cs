@@ -1,6 +1,8 @@
 ﻿using FuNews.Modals.DTOs.Request._Tag;
 using FuNews.Modals.DTOs.Request.News;
+using FuNews.Modals.DTOs.Request.Paging;
 using FuNews.Modals.DTOs.Response.News;
+using FuNews.Modals.DTOs.Response.Paging;
 using FUNews.BLL.InterfaceService;
 using FUNews.BLL.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -24,19 +26,26 @@ namespace FUNewsManagement.Controllers
             _categoryService = categoryService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             var AccountId = HttpContext.Session.GetInt32("AccountId");
             var Role = HttpContext.Session.GetInt32("AccountRole");
-            List<NewsResponse> newsList = new();
+
+            var pagingRequest = new PagingRequest
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            PageResult<NewsResponse> pagedNews;
             if (Role == 3)
             {
-                newsList = await _newsService.GetAllForAdmin();
+                pagedNews = await _newsService.GetAllForAdmin(pagingRequest);
             } else
             {
-                newsList = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()));
+                pagedNews = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()), pagingRequest);
             }
-            return View(newsList);
+            return View(pagedNews);
         }
         public async Task<IActionResult> Create()
         {
@@ -127,10 +136,17 @@ namespace FUNewsManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Approve()
+        public async Task<IActionResult> Approve(int pageNumber = 1, int pageSize = 10)
         {
-            var pendingNews = await _newsService.GetNewsPendingApproval(); // trả về các bài chưa duyệt
-            return View("Approve", pendingNews); // View: Views/News/Approve.cshtml
+            var pagingRequest = new PagingRequest
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            PageResult<NewsResponse> pagedNews = await _newsService.GetNewsPendingApproval(pagingRequest);
+
+            return View("Approve", pagedNews);
         }
     }
 }

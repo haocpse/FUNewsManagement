@@ -16,14 +16,14 @@ namespace FUNews.BLL.InterfaceService
         Task<NewsResponse> CreateNews(short id, NewsRequest request);
         Task<NewsResponse> UpdateNews(short id, UpdateRequest request);
         Task DeleteNews(String id);
-        Task<List<NewsResponse>> GetOwnedNews(short id);
+        Task<PageResult<NewsResponse>> GetOwnedNews(short id, PagingRequest request);
         Task<NewsResponse> GetById(String id);
 
         Task<PageResult<NewsResponse>> OverriedGetAllAsync(PagingRequest request);
-        Task<List<NewsResponse>> GetAllForAdmin();
+        Task<PageResult<NewsResponse>> GetAllForAdmin(PagingRequest request);
 
         Task<NewsResponse> ApproveNewsAsync(String id);
-        Task<List<NewsResponse>> GetNewsPendingApproval();
+        Task<PageResult<NewsResponse>> GetNewsPendingApproval(PagingRequest request);
 
         Task<PageResult<NewsResponse>> GetNewsByCategoryAsync(short? categoryId, PagingRequest request);
 

@@ -73,12 +73,20 @@ namespace FUNews.DAL.Repository
 			};
 			return grouped;
 		}
-        public Task<List<NewsArticle>> GetOwnedNews(short id)
+        public async Task<(List<NewsArticle> Items, int TotalCount)> GetOwnedNews(short id, int pageNumber, int pageSize)
         {
-            return _context.NewsArticles
-                  .Where(n => n.CreatedById == id)
-                  .OrderByDescending(n => n.CreatedDate)
-                  .ToListAsync();
+            var query = _dbSet
+               .Where(n => n.CreatedById == id)
+               .AsQueryable();
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
 
 		public async Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForGuest(int pageNumber, int pageSize)
@@ -97,12 +105,34 @@ namespace FUNews.DAL.Repository
             return (items, totalCount);
         }
 
-        public async Task<List<NewsArticle>> GetNewsPendingApproval()
+        public async Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForAdmin(int pageNumber, int pageSize)
         {
-            return await _context.NewsArticles
-                .Where(n => n.NewsStatus.Value == false)
-                .OrderByDescending(n => n.CreatedDate)
+            var query = _dbSet.AsQueryable();
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (items, totalCount);
+        }
+
+        public async Task<(List<NewsArticle> Items, int TotalCount)> GetNewsPendingApproval(int pageNumber, int pageSize)
+        {
+            var query = _dbSet
+                .Where(n => n.NewsStatus.Value == false)
+                .AsQueryable();
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
 
         public async Task<NewsArticle?> GetNewsByCategoryId(short id)
