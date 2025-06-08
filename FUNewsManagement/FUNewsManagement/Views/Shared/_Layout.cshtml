@@ -25,15 +25,16 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     @{
                         var isAuthenticated = User.Identity.IsAuthenticated;
                         var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                        var userName = User.Identity?.Name ?? "Guest";
                     }
-                    <ul class="navbar-nav flex-grow-1">
 
-       
-                        @if (isAuthenticated && role == "3") // Chỉ Admin
+                    <!-- NAVIGATION BÊN TRÁI -->
+                    <ul class="navbar-nav">
+                        @if (isAuthenticated && role == "3")
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button"
@@ -53,7 +54,7 @@
                             </li>
                         }
 
-                        @if (isAuthenticated && role == "1") // Cả Admin và Staff
+                        @if (isAuthenticated && role == "1")
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="managementDropdown" role="button"
@@ -65,27 +66,44 @@
                                     <li><a class="dropdown-item" asp-controller="News" asp-action="Index">News</a></li>
                                 </ul>
                             </li>
-
                         }
-                        @if (isAuthenticated)
-                        {
+                    </ul>
 
-                            <!-- Logout -->
-                            <li class="nav-item ms-auto">
-                                <form asp-controller="Authen" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                </form>
-                            </li>
+                    <!-- LOGIN HOẶC WELCOME BÊN PHẢI -->
+                    <div class="d-flex align-items-center ms-auto">
+                        @if (!isAuthenticated)
+                        {
+                            <a class="nav-link text-dark" asp-controller="Authen" asp-action="Index">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
                         }
                         else
                         {
-                            <!-- Chưa đăng nhập -->
-                            <li class="nav-item ms-auto">
-                                <a class="nav-link text-dark" asp-controller="Authen" asp-action="Index">Login</a>
-                            </li>
+                            <span class="me-3 text-muted small">
+                                👋 Welcome, <strong>@userName</strong>
+                                (Role:
+                                @switch (role)
+                                {
+                                    case "1":
+                                        @:Staff
+                                        break;
+                                    case "2":
+                                        @:User
+                                        break;
+                                    case "3":
+                                        @:Admin
+                                        break;
+                                    default:
+                                        @:Unknown
+                                        break;
+                                })
+                            </span>
+                            <form asp-controller="Authen" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                            </form>
                         }
-                    </ul>
-            </div>
+                    </div>
+                </div>
         </div>
     </nav>
 </header>
