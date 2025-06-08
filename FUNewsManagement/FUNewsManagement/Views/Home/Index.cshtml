@@ -1,87 +1,82 @@
 ﻿@model FuNews.Modals.DTOs.Response.Paging.PageResult<FuNews.Modals.DTOs.Response.News.NewsResponse>
 @{
-    ViewData["Title"] = "News Articles List";
+    ViewData["Title"] = "News Articles Overview";
 }
 
 <style>
-    .card-title-ellipsis {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .card-hover:hover {
+        border-color: #0d6efd !important;
+        box-shadow: 0 6px 20px rgba(13,110,253,0.2);
+        transform: translateY(-3px);
     }
 
-    .card-content-preview {
+    .truncate-text {
         display: -webkit-box;
-        -webkit-line-clamp: 1; /* Chỉ 1 dòng */
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    [title] {
-        cursor: help;
     }
 </style>
 
-<div class="container py-4">
-    <h2 class="mb-4 text-center text-primary">FPT University News</h2>
+<div class="container py-5">
+    <h2 class="mb-5 text-center text-primary fw-bold">📰 FPT University News</h2>
 
-    <div class="container mb-4">
-        <div class="nav nav-pills justify-content-center">
-            <a class="nav-link @(string.IsNullOrEmpty(Context.Request.Query["categoryId"]) ? "active" : "")" href="@Url.Action("Index", new { categoryId = (short?)null })">All</a>
-
+    <div class="mb-4 text-center">
+        <div class="btn-group" role="group">
+            <a class="btn btn-outline-primary @(string.IsNullOrEmpty(Context.Request.Query["categoryId"]) ? "active" : "")" href="@Url.Action("Index", new { categoryId = (short?)null })">All</a>
             @foreach (var cat in (List<FUNews.Modals.DTOs.Response.CategoryResponse>)ViewBag.Categories)
             {
-                <a class="nav-link @(Context.Request.Query["categoryId"] == cat.CategoryId.ToString() ? "active" : "")"
-                   href="@Url.Action("Index", new { categoryId = cat.CategoryId })">
-                    @cat.CategoryName
-                </a>
+                <a class="btn btn-outline-primary @(Context.Request.Query["categoryId"] == cat.CategoryId.ToString() ? "active" : "")"
+                   href="@Url.Action("Index", new { categoryId = cat.CategoryId })">@cat.CategoryName</a>
             }
         </div>
     </div>
 
-   
-        <div class="list-group">
-        @foreach (var news in Model.Items)
-        {
-            <a href="/News/Details/@news.NewsArticleId" class="list-group-item list-group-item-action py-3">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1 text-primary">@news.NewsTitle</h5>
-                    <small class="text-muted">@news.CreatedDate?.ToString("dd/MM/yyyy")</small>
-                </div>
+    @foreach (var news in Model.Items)
+    {
+        <div class="card w-100 mb-4 border border-2 border-light shadow-sm card-hover">
+            <div class="card-body">
+                <h5 class="card-title text-primary fw-bold">
+                    <a href="/News/Details/@news.NewsArticleId" class="text-decoration-none text-primary">
+                        @news.NewsTitle
+                    </a>
+                </h5>
 
-                <p class="mb-2 text-secondary">@news.NewsContent?.Substring(0, Math.Min(100, news.NewsContent.Length))...</p>
+                <p class="card-text text-secondary truncate-text">
+                    @news.NewsContent?.Substring(0, Math.Min(150, news.NewsContent.Length))...
+                </p>
 
-                <div class="mb-1">
+                <p class="mb-1">
                     <strong>Category:</strong>
                     <span class="badge bg-info text-dark">@news.Category?.CategoryName</span>
-                </div>
+                </p>
 
-                <div class="mb-1">
+                <p class="mb-1">
                     <strong>Tags:</strong>
                     @if (news.Tags != null && news.Tags.Any())
                     {
                         @foreach (var tag in news.Tags)
                         {
-                            <span class="badge bg-secondary me-1">@tag.TagName</span>
+                            <span class="badge bg-success me-1">@tag.TagName</span>
                         }
                     }
                     else
                     {
                         <span class="text-muted">None</span>
                     }
-                </div>
+                </p>
 
-                <div class="text-muted">
-                    <strong>Source:</strong> @(!string.IsNullOrWhiteSpace(news.NewsSource) ? news.NewsSource : "N/A")
+                <div class="text-muted small">
+                    <strong>Source:</strong> @(!string.IsNullOrWhiteSpace(news.NewsSource) ? news.NewsSource : "N/A") <br />
+                    <strong>Author:</strong> @(!string.IsNullOrWhiteSpace(news.AccountName) ? news.AccountName : "N/A") <br />
+                    <strong>Date:</strong> @news.CreatedDate?.ToString("dd/MM/yyyy")
                 </div>
-                <div class="text-muted">
-                    <strong>Author:</strong> @(!string.IsNullOrWhiteSpace(news.AccountName) ? news.AccountName : "N/A")
-                </div>
-            </a>
-        }
+            </div>
         </div>
-    <nav aria-label="Page navigation" class="mt-4">
+    }
+
+    <!-- Pagination -->
+    <nav class="mt-5">
         <ul class="pagination justify-content-center">
             @{
                 var totalPages = (int)Math.Ceiling((double)Model.TotalItems / Model.PageSize);
@@ -105,6 +100,4 @@
             </li>
         </ul>
     </nav>
-
-   
 </div>

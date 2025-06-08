@@ -9,9 +9,11 @@
 <table class="table table-bordered table-striped">
     <thead class="thead-dark">
         <tr>
+            <th>Number</th>
             <th>Title</th>
             <th>Subtitle</th>
             <th>Category</th>
+            <th>Author</th>
             <th>Status</th>
             <th>Created Date</th>
             <th>Actions</th>
@@ -28,6 +30,7 @@
                 <td>@item.NewsTitle</td>
                 <td>@item.Headline</td>
                 <td>@item.Category?.CategoryName</td>
+                <td>@item.AccountName</td>
                 <td>
                     @if (item.NewsStatus == true)
                     {
