@@ -78,12 +78,14 @@ namespace FUNews.DAL.Repository
             IQueryable<NewsArticle> query;
             if (!status.HasValue)
             {
-                query = _dbSet.AsQueryable();
+                query = _dbSet
+                    .Where(n => n.CreatedById == id)
+                    .AsQueryable();
             }
             else
             {
                 query = _dbSet
-                    .Where(n => n.NewsStatus == status)
+                    .Where(n => n.CreatedById == id && n.NewsStatus == status)
                     .AsQueryable();
             }
             int totalCount = await query.CountAsync();
