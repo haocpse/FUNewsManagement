@@ -73,11 +73,19 @@ namespace FUNews.DAL.Repository
 			};
 			return grouped;
 		}
-        public async Task<(List<NewsArticle> Items, int TotalCount)> GetOwnedNews(short id, int pageNumber, int pageSize)
+        public async Task<(List<NewsArticle> Items, int TotalCount)> GetOwnedNews(short id, bool? status, int pageNumber, int pageSize)
         {
-            var query = _dbSet
-               .Where(n => n.CreatedById == id)
-               .AsQueryable();
+            IQueryable<NewsArticle> query;
+            if (!status.HasValue)
+            {
+                query = _dbSet.AsQueryable();
+            }
+            else
+            {
+                query = _dbSet
+                    .Where(n => n.NewsStatus == status)
+                    .AsQueryable();
+            }
             int totalCount = await query.CountAsync();
 
             var items = await query
@@ -105,9 +113,19 @@ namespace FUNews.DAL.Repository
             return (items, totalCount);
         }
 
-        public async Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForAdmin(int pageNumber, int pageSize)
+        public async Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForAdmin(bool? status, int pageNumber, int pageSize)
         {
-            var query = _dbSet.AsQueryable();
+            IQueryable<NewsArticle> query;
+            if (!status.HasValue)
+            {
+                query = _dbSet.AsQueryable();
+            } else
+            {
+                query = _dbSet
+                    .Where(n => n.NewsStatus == status)
+                    .AsQueryable();
+            }
+                
             int totalCount = await query.CountAsync();
 
             var items = await query

@@ -93,9 +93,9 @@ namespace FUNews.BLL.Service
             return await BuildNewsResponse(news);
         }
 
-        public async Task<PageResult<NewsResponse>> GetOwnedNews(short id, PagingRequest request)
+        public async Task<PageResult<NewsResponse>> GetOwnedNews(short id, bool? status, PagingRequest request)
         {
-            var (news, total) = await _newsRepository.GetOwnedNews(id, request.PageNumber, request.PageSize);
+            var (news, total) = await _newsRepository.GetOwnedNews(id, status, request.PageNumber, request.PageSize);
             List<NewsResponse> responses = new List<NewsResponse>();
             foreach (var item in news)
             {
@@ -153,9 +153,9 @@ namespace FUNews.BLL.Service
 
         }
 
-        public async Task<PageResult<NewsResponse>> GetAllForAdmin(PagingRequest request)
+        public async Task<PageResult<NewsResponse>> GetAllForAdmin(bool? status, PagingRequest request)
         {
-            var (news, total) = await _newsRepository.GetAllNewsForAdmin(request.PageNumber, request.PageSize);
+            var (news, total) = await _newsRepository.GetAllNewsForAdmin(status, request.PageNumber, request.PageSize);
             List<NewsResponse> responses = new List<NewsResponse>();
             foreach (var item in news)
             {

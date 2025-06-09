@@ -14,10 +14,10 @@ namespace FUNews.DAL.InterfaceRepository
 
         Task<List<NewsArticle>> FindAllByDate(DateTime startDate, DateTime endDate);
         Task<List<ReportItem>> GetReportByDateAsync(DateTime startDate, DateTime endDate, string groupBy);
-        Task<(List<NewsArticle> Items, int TotalCount)> GetOwnedNews(short id, int pageNumber, int pageSize);
+        Task<(List<NewsArticle> Items, int TotalCount)> GetOwnedNews(short id, bool? status, int pageNumber, int pageSize);
         Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForGuest(int pageNumber, int pageSize);
 
-        Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForAdmin(int pageNumber, int pageSize);
+        Task<(List<NewsArticle> Items, int TotalCount)> GetAllNewsForAdmin(bool? status, int pageNumber, int pageSize);
         Task<(List<NewsArticle> Items, int TotalCount)> GetNewsPendingApproval(int pageNumber, int pageSize);
         Task<NewsArticle> GetNewsByCategoryId(short categoryId);
 

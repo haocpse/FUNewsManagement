@@ -26,7 +26,7 @@ namespace FUNewsManagement.Controllers
             _categoryService = categoryService;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(bool? status, int pageNumber = 1, int pageSize = 10)
         {
             var AccountId = HttpContext.Session.GetInt32("AccountId");
             var Role = HttpContext.Session.GetInt32("AccountRole");
@@ -40,11 +40,12 @@ namespace FUNewsManagement.Controllers
             PageResult<NewsResponse> pagedNews;
             if (Role == 3)
             {
-                pagedNews = await _newsService.GetAllForAdmin(pagingRequest);
+                pagedNews = await _newsService.GetAllForAdmin(status, pagingRequest);
             } else
             {
-                pagedNews = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()), pagingRequest);
+                pagedNews = await _newsService.GetOwnedNews(short.Parse(AccountId.ToString()), status, pagingRequest);
             }
+            ViewBag.CurrentStatus = status;
             return View(pagedNews);
         }
         public async Task<IActionResult> Create()

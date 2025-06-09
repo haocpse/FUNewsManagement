@@ -8,6 +8,21 @@
 
 <button class="btn btn-primary mb-3" onclick="openPopup('/News/Create')">+ Create New</button>
 
+@{
+    var currentStatus = Context.Request.Query["status"].ToString()?.ToLower(); // "true", "false", hoặc ""
+}
+
+<div class="mb-4 text-center">
+    <div class="btn-group me-2" role="group">
+        <a class="btn btn-outline-success @(string.IsNullOrEmpty(currentStatus) ? "active" : "")"
+           href="@Url.Action("Index", new { status = (bool?)null, categoryId = Context.Request.Query["categoryId"], pageNumber = 1 })">All</a>
+        <a class="btn btn-outline-success @(currentStatus == "true" ? "active" : "")"
+           href="@Url.Action("Index", new { status = true, categoryId = Context.Request.Query["categoryId"], pageNumber = 1 })">Approved</a>
+        <a class="btn btn-outline-success @(currentStatus == "false" ? "active" : "")"
+           href="@Url.Action("Index", new { status = false, categoryId = Context.Request.Query["categoryId"], pageNumber = 1 })">Pending</a>
+    </div>
+</div>
+
 <table class="table table-bordered table-striped">
     <thead class="thead-dark">
         <tr>
